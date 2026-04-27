@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CRM Coaching">
+<meta name="theme-color" content="#1D9E75">
+<title>CRM · Coaching</title>
+<style>
+  :root {
+    --T: #1D9E75; --T50: #E1F5EE; --T100: #9FE1CB; --T800: #085041;
+    --A: #BA7517; --A50: #FAEEDA; --A800: #633806;
+    --C: #D85A30; --C50: #FAECE7; --C800: #712B13;
+    --B: #185FA5; --B50: #E6F1FB; --B800: #0C447C;
+    --P: #534AB7; --P50: #EEEDFE; --P800: #3C3489;
+    --R: #A32D2D; --R50: #FCEBEB;
+    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeece8;
+    --txt: #1a1a1a; --txt2: #6b6b69; --txt3: #999896;
+    --brd: rgba(0,0,0,0.1); --brd2: rgba(0,0,0,0.18);
+    --rad: 12px; --rad-sm: 8px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e; --bg2: #2c2c2e; --bg3: #3a3a3c;
+      --txt: #f2f2f7; --txt2: #aeaeb2; --txt3: #636366;
+      --brd: rgba(255,255,255,0.1); --brd2: rgba(255,255,255,0.18);
+      --T50: #0a3d2b; --T800: #9FE1CB;
+      --A50: #3d2800; --A800: #FAC775;
+      --B50: #0a1f3d; --B800: #85B7EB;
+      --P50: #1a1854; --P800: #AFA9EC;
+      --C50: #3d1a0a; --C800: #F0997B;
+      --R50: #3d0a0a;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--txt); font-size: 15px; }
+
+  /* APP SHELL */
+  .app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
+  .header { padding: 14px 16px 10px; background: var(--bg); border-bottom: 0.5px solid var(--brd); flex-shrink: 0; }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 19px; font-weight: 600; letter-spacing: -0.4px; color: var(--txt); }
+  .logo em { color: var(--T); font-style: normal; }
+  .header-sub { font-size: 11px; color: var(--txt3); margin-top: 2px; }
+  .sync-btn { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border: 0.5px solid var(--brd2); border-radius: 20px; background: transparent; font-size: 11px; color: var(--txt2); cursor: pointer; -webkit-appearance: none; }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--T); flex-shrink: 0; }
+  .sync-dot.pulsing { animation: pulse 1s infinite; background: var(--A); }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+
+  /* SCREENS */
+  .screens { flex: 1; overflow: hidden; position: relative; }
+  .screen { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 0 calc(20px + var(--safe-bottom)); display: none; }
+  .screen.active { display: block; }
+  .pad { padding: 16px; }
+
+  /* NAV BAR */
+  .nav { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--bg); border-top: 0.5px solid var(--brd); padding-bottom: var(--safe-bottom); flex-shrink: 0; }
+  .nb { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 8px 4px 6px; border: none; background: transparent; color: var(--txt3); font-size: 10px; cursor: pointer; transition: color .15s; min-height: 50px; }
+  .nb.on { color: var(--T); }
+  .nb svg { width: 20px; height: 20px; }
+
+  /* TYPOGRAPHY */
+  .sec { font-size: 11px; font-weight: 600; color: var(--txt3); text-transform: uppercase; letter-spacing: .07em; padding: 18px 16px 8px; }
+  .sec:first-child { padding-top: 14px; }
+
+  /* METRIC CARDS */
+  .mg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0 16px; margin-bottom: 4px; }
+  .mc { background: var(--bg2); border-radius: var(--rad); padding: 14px; position: relative; overflow: hidden; }
+  .mc-bar { position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+  .mc-lbl { font-size: 12px; color: var(--txt2); margin-bottom: 5px; }
+  .mc-val { font-size: 28px; font-weight: 600; color: var(--txt); line-height: 1; letter-spacing: -1px; }
+  .mc-sub { font-size: 11px; color: var(--txt3); margin-top: 3px; }
+
+  /* GOAL BAR */
+  .goal { background: var(--bg2); border-radius: var(--rad); padding: 14px 16px; margin: 0 16px 4px; }
+  .goal-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .goal-lbl { font-size: 13px; color: var(--txt2); }
+  .goal-num { font-size: 24px; font-weight: 600; color: var(--T); letter-spacing: -0.5px; }
+  .goal-track { height: 5px; background: var(--bg3); border-radius: 3px; }
+  .goal-fill { height: 5px; border-radius: 3px; background: var(--T); transition: width .8s cubic-bezier(.4,0,.2,1); }
+  .goal-dots { display: flex; gap: 6px; margin-top: 8px; }
+  .gdot { flex: 1; height: 4px; border-radius: 2px; background: var(--bg3); transition: background .4s; }
+  .gdot.on { background: var(--T); }
+
+  /* CARDS */
+  .card { background: var(--bg); border: 0.5px solid var(--brd); border-radius: var(--rad); padding: 13px 14px; margin: 0 16px 8px; }
+  .card.tap { cursor: pointer; transition: background .12s; }
+  .card.tap:active { background: var(--bg2); }
+
+  /* CONTACT ROW */
+  .crow { display: flex; align-items: center; gap: 11px; }
+  .av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .c-name { font-size: 14px; font-weight: 600; color: var(--txt); line-height: 1.3; }
+  .c-meta { font-size: 12px; color: var(--txt2); margin-top: 2px; }
+  .c-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .bdg { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .sP { background: var(--B50); color: var(--B800); }
+  .sC { background: var(--A50); color: var(--A800); }
+  .sR { background: var(--P50); color: var(--P800); }
+  .sO { background: var(--C50); color: var(--C800); }
+  .sCL { background: var(--T50); color: var(--T800); }
+  .bdg-gray { background: var(--bg2); color: var(--txt2); }
+  .chevron { color: var(--brd2); flex-shrink: 0; }
+
+  /* AI ROWS */
+  .ai { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--brd); align-items: flex-start; }
+  .ai:last-child { border: none; }
+  .ai-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .ai-name { font-size: 13px; color: var(--txt); line-height: 1.4; }
+  .ai-sub { font-size: 12px; color: var(--txt3); margin-top: 2px; }
+
+  /* SEARCH */
+  .search-wrap { padding: 10px 16px 0; position: relative; }
+  .search-ic { position: absolute; left: 26px; top: 50%; transform: translateY(-50%); color: var(--txt3); pointer-events: none; }
+  .s-input { width: 100%; padding: 9px 12px 9px 34px; background: var(--bg2); border: 0.5px solid var(--brd); border-radius: var(--rad-sm); font-size: 14px; color: var(--txt); -webkit-appearance: none; }
+  .s-input:focus { outline: none; border-color: var(--T); background: var(--bg); }
+
+  /* FILTER CHIPS */
+  .chips { display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--brd); background: transparent; color: var(--txt2); cursor: pointer; white-space: nowrap; -webkit-appearance: none; }
+  .chip.on { background: var(--T50); color: var(--T800); border-color: var(--T); font-weight: 500; }
+
+  /* FORMS */
+  .form-card { background: var(--bg2); border-radius: var(--rad); padding: 14px; margin: 0 16px 10px; }
+  .flbl { font-size: 11px; font-weight: 600; color: var(--txt3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; display: block; }
+  .finput, .fsel, .ftxt { width: 100%; padding: 9px 12px; background: var(--bg); border: 0.5px solid var(--brd); border-radius: var(--rad-sm); font-size: 14px; color: var(--txt); margin-bottom: 10px; -webkit-appearance: none; font-family: inherit; }
+  .finput:focus, .fsel:focus, .ftxt:focus { outline: none; border-color: var(--T); }
+  .ftxt { resize: vertical; min-height: 70px; }
+  .fsel { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  /* BUTTONS */
+  .btn-primary { width: 100%; padding: 12px; background: var(--T); color: #fff; border: none; border-radius: var(--rad-sm); font-size: 15px; font-weight: 600; cursor: pointer; letter-spacing: .01em; -webkit-appearance: none; }
+  .btn-primary:active { background: var(--T800); }
+  .btn-sm { padding: 6px 13px; font-size: 12px; border: 0.5px solid var(--brd2); border-radius: 20px; background: transparent; color: var(--txt2); cursor: pointer; -webkit-appearance: none; }
+  .btn-done { padding: 6px 13px; font-size: 12px; border: 0.5px solid var(--T); border-radius: 20px; background: transparent; color: var(--T); cursor: pointer; font-weight: 500; -webkit-appearance: none; }
+  .btn-ghost { display: flex; align-items: center; gap: 5px; padding: 0; background: none; border: none; color: var(--txt2); font-size: 13px; cursor: pointer; -webkit-appearance: none; }
+  .btn-ghost:active { color: var(--T); }
+
+  /* DETAIL FIELDS */
+  .det-header { display: flex; align-items: center; gap: 13px; margin-bottom: 14px; }
+  .det-av { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
+  .det-name { font-size: 17px; font-weight: 700; color: var(--txt); letter-spacing: -.3px; }
+  .det-co { font-size: 13px; color: var(--txt2); margin-top: 2px; }
+  .fld-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 0.5px solid var(--brd); }
+  .fld-row:last-child { border: none; }
+  .fld-lbl { font-size: 11px; font-weight: 600; color: var(--txt3); text-transform: uppercase; letter-spacing: .06em; width: 80px; flex-shrink: 0; }
+  .fld-val { font-size: 13px; color: var(--txt); flex: 1; border: none; background: transparent; text-align: right; font-family: inherit; padding: 0; min-width: 0; }
+  .fld-val:focus { outline: none; color: var(--T); }
+
+  /* PIPELINE */
+  .pipe-stage { padding: 0 16px 14px; }
+  .pipe-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .pipe-lbl { font-size: 13px; font-weight: 600; color: var(--txt); }
+  .pipe-cnt { font-size: 12px; color: var(--txt3); }
+  .pipe-track { height: 5px; background: var(--bg2); border-radius: 3px; }
+  .pipe-fill { height: 5px; border-radius: 3px; transition: width .5s; }
+  .pipe-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .ppill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: var(--bg2); color: var(--txt2); border: 0.5px solid var(--brd); cursor: pointer; }
+  .ppill:active { border-color: var(--T); color: var(--T800); }
+
+  /* FOLLOWUP CARDS */
+  .fu-card { border-radius: var(--rad); padding: 13px 14px; margin: 0 16px 8px; background: var(--bg); border: 0.5px solid var(--brd); }
+  .fu-card.venc { border-left: 3px solid #E24B4A; }
+  .fu-card.hoy { border-left: 3px solid var(--A); }
+  .fu-card.prox { border-left: 3px solid var(--T); }
+  .fu-inner { display: flex; align-items: flex-start; gap: 10px; }
+  .fu-info { flex: 1; min-width: 0; }
+  .fu-name { font-size: 14px; font-weight: 600; color: var(--txt); }
+  .fu-note { font-size: 12px; color: var(--txt2); margin-top: 2px; }
+  .fu-date { font-size: 12px; font-weight: 600; margin-top: 5px; }
+  .fu-acts { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+
+  /* MSG GENERATOR */
+  .msg-box { background: var(--bg2); border-radius: var(--rad); padding: 14px; margin: 0 16px 10px; }
+  .msg-output { background: var(--bg); border: 0.5px solid var(--brd); border-radius: var(--rad-sm); padding: 12px; font-size: 13px; color: var(--txt); line-height: 1.6; white-space: pre-wrap; min-height: 80px; }
+  .msg-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+  /* VOICE BTN */
+  .voice-btn { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: var(--bg2); border: 0.5px solid var(--brd); border-radius: var(--rad-sm); width: 100%; cursor: pointer; font-size: 13px; color: var(--txt2); -webkit-appearance: none; margin-bottom: 10px; }
+  .voice-btn.recording { background: var(--R50); border-color: #E24B4A; color: var(--R); }
+  .voice-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--txt3); }
+  .voice-btn.recording .voice-dot { background: #E24B4A; animation: pulse 1s infinite; }
+
+  /* DIVIDER */
+  .div { height: 0.5px; background: var(--brd); margin: 6px 16px 14px; }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 28px 0; color: var(--txt3); font-size: 13px; }
+
+  /* TOAST */
+  #toast { position: fixed; bottom: calc(70px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--txt); color: var(--bg); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 1000; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; }
+
+  /* LOADING */
+  .loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px; }
+  .loading-logo { font-size: 32px; font-weight: 700; letter-spacing: -1px; color: var(--txt); }
+  .loading-logo em { color: var(--T); font-style: normal; }
+  .loading-sub { font-size: 13px; color: var(--txt3); }
+  .spinner { width: 24px; height: 24px; border: 2px solid var(--brd); border-top-color: var(--T); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--bg); border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + var(--safe-bottom)); width: 100%; max-width: 480px; max-height: 90dvh; overflow-y: auto; }
+  .modal-handle { width: 36px; height: 4px; background: var(--brd2); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 14px; letter-spacing: -.3px; }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="loading-screen" id="loading">
+    <div class="loading-logo">crm<em>.</em>coaching</div>
+    <div class="spinner"></div>
+    <div class="loading-sub">Cargando tu práctica...</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- MSG MODAL -->
+<div class="modal-bg" id="msg-modal" onclick="closeMsgModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="msg-title">Redactar mensaje</div>
+    <div class="msg-box">
+      <div class="msg-output" id="msg-out">Generando mensaje...</div>
+      <div class="msg-actions">
+        <button class="btn-sm" onclick="copyMsg()">Copiar</button>
+        <button class="btn-sm" onclick="genMsg()">Regenerar</button>
+        <button class="btn-primary" style="flex:1;padding:6px 12px;font-size:13px;" onclick="sendWA()">WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PAL=[['#E1F5EE','#1D9E75'],['#E6F1FB','#185FA5'],['#EEEDFE','#534AB7'],['#FAEEDA','#BA7517'],['#FAECE7','#D85A30'],['#F1EFE8','#5F5E5A'],['#FBEAF0','#993556'],['#EAF3DE','#3B6D11']];
+const STAGES=['Prospecto','Contactado','Reunión','Propuesta','Cliente'];
+const SCOL={Prospecto:'#378ADD',Contactado:'#BA7517','Reunión':'#534AB7',Propuesta:'#D85A30',Cliente:'#1D9E75'};
+const SBADGE={Prospecto:'sP',Contactado:'sC','Reunión':'sR',Propuesta:'sO',Cliente:'sCL'};
+const RAW=[
+  {name:"Luis Gutierrez Ramon",email:"luis.gutierrez@aarali.com",company:"AARALI",role:"Director",dept:"CEO",phone:""},
+  {name:"Gustavo Gonzalez Cueva",email:"ggonzalez@almex.com.mx",company:"ALMEX",role:"Director",dept:"CEO",phone:""},
+  {name:"Eduardo Reyna",email:"",company:"American Depot",role:"Director",dept:"Ventas",phone:""},
+  {name:"Ana Marcela Villarreal",email:"",company:"",role:"",dept:"R&D",phone:""},
+  {name:"Pedro Sebastian",email:"psebastian1234@hotmail.com",company:"",role:"",dept:"Legal",phone:""},
+  {name:"Gabriela Villarreal",email:"",company:"",role:"",dept:"Ingeniería",phone:""},
+  {name:"Cesar Villarreal",email:"cesar@championcoat.com.mx",company:"Champion Coat",role:"CEO",dept:"CEO",phone:""},
+  {name:"Mario Eulalio Gutierrez",email:"mgutierrez@contrissa.com.mx",company:"CONTRISSA",role:"CEO",dept:"CEO",phone:""},
+  {name:"Antonio Sadurny",email:"asadurni@contrissa.com.mx",company:"CONTRISSA",role:"CEO",dept:"CEO",phone:""},
+  {name:"Erick Inzunza",email:"erick.inzunza.valdes@gmail.com",company:"",role:"",dept:"Ingeniería",phone:"",notes:"News 2 el 16 Feb, 4-5 Marzo"},
+  {name:"Alejandra Sierra",email:"",company:"",role:"CEO",dept:"CEO",phone:""},
+  {name:"Jesus Sierra B.",email:"",company:"",role:"CEO",dept:"CEO",phone:""},
+  {name:"Castulo Sierra",email:"",company:"",role:"CEO",dept:"CEO",phone:""},
+  {name:"Dr. Rodolfo Colunga",email:"",company:"",role:"",dept:"R&D",phone:"",notes:"News 2, el 5 de Marzo"},
+  {name:"Gabriel Sierra Kamar",email:"gabriel.sierra@energypointmva.mx",company:"Energy Point MVA",role:"CEO",dept:"CEO",phone:""},
+  {name:"Sandra Govea",email:"sandra.govea@sikatransportes.com",company:"Sika Transportes",role:"",dept:"Finanzas",phone:""},
+  {name:"Salvador Kamar",email:"salvadorkamar@hotmail.com",company:"",role:"CEO",dept:"CEO",phone:""},
+  {name:"Ada Guerra",email:"adaguerra0776@gmail.com",company:"",role:"CEO",dept:"CEO",phone:""},
+  {name:"Agustin Villarreal B",email:"agustin@ladrilleramecanizada.com",company:"Ladrillera Mecanizada",role:"CEO",dept:"CEO",phone:""},
+  {name:"Rene Amezcua",email:"reneamezcua@msn.com",company:"",role:"",dept:"",phone:""},
+  {name:"Max Gonzalez",email:"",company:"",role:"",dept:"",phone:""},
+  {name:"Gerardo Saldaña",email:"",company:"",role:"",dept:"",phone:""},
+  {name:"Patricia Fink",email:"",company:"Maxion",role:"",dept:"",phone:""},
+  {name:"Ricardo Lazalde",email:"rlazalde@grupolazalde.com",company:"Grupo Lazalde",role:"",dept:"",phone:""},
+  {name:"Miguel Sepulveda Lozano",email:"msepulveda@grupolazalde.com",company:"Grupo Lazalde",role:"",dept:"",phone:""},
+  {name:"Pepin de Leon",email:"jose.deleonbenavides@gmail.com",company:"",role:"",dept:"",phone:""},
+  {name:"Miguel Perez",email:"",company:"PLESA",role:"",dept:"",phone:""},
+  {name:"Hilda Muzquiz",email:"",company:"SESA",role:"",dept:"",phone:""},
+  {name:"Raul Ramos",email:"",company:"",role:"",dept:"",phone:""},
+  {name:"Vidal Hernandez",email:"vidal.hernandez@live.com",company:"",role:"",dept:"",phone:""},
+  {name:"Warwnka Smutney",email:"",company:"Vikinga Tropical",role:"",dept:"",phone:""}
+];
+
+let contacts=[], activities=[], followups=[];
+let curScreen='dash', cFilter='', cSearch='', editId=null, msgContact=null;
+let recognition=null, isRecording=false;
+
+// STORAGE
+function tGet(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null;}catch(e){return null;}}
+function tSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+// INIT
+function init(){
+  const s=tGet('crm4_contacts');
+  if(s&&s.length){contacts=s;}
+  else{
+    contacts=RAW.map((r,i)=>({id:i+1,...r,stage:'Prospecto',project:'',value:'',followDate:'',phone:r.phone||'',notes:r.notes||'',lastActivity:'',lastActivityDate:''}));
+    tSet('crm4_contacts',contacts);
+  }
+  activities=tGet('crm4_activities')||[];
+  followups=tGet('crm4_followups')||[];
+  setTimeout(()=>{ buildApp(); nav('dash'); },600);
+}
+
+// BUILD APP SHELL
+function buildApp(){
+  document.getElementById('app').innerHTML=`
+    <div class="header">
+      <div class="header-row">
+        <div>
+          <div class="logo">crm<em>.</em>coaching</div>
+          <div class="header-sub" id="sync-st">${contacts.length} contactos · datos locales</div>
+        </div>
+        <button class="sync-btn" onclick="syncNow()">
+          <div class="sync-dot" id="sdot"></div>
+          <span id="slbl">Sync</span>
+        </button>
+      </div>
+    </div>
+    <div class="screens">
+      <div class="screen" id="s-dash"></div>
+      <div class="screen" id="s-contacts"></div>
+      <div class="screen" id="s-detail"></div>
+      <div class="screen" id="s-pipeline"></div>
+      <div class="screen" id="s-activity"></div>
+      <div class="screen" id="s-follow"></div>
+    </div>
+    <nav class="nav">
+      <button class="nb" id="nb-dash" onclick="nav('dash')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Inicio
+      </button>
+      <button class="nb" id="nb-contacts" onclick="nav('contacts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Red
+      </button>
+      <button class="nb" id="nb-pipeline" onclick="nav('pipeline')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M6 12h12M9 18h6"/></svg>
+        Pipeline
+      </button>
+      <button class="nb" id="nb-activity" onclick="nav('activity')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Actividad
+      </button>
+      <button class="nb" id="nb-follow" onclick="nav('follow')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+        Agenda
+      </button>
+    </nav>`;
+}
+
+// NAVIGATION
+function nav(id){
+  if(!document.getElementById('s-dash')) return;
+  curScreen=id;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const scr=document.getElementById('s-'+id)||document.getElementById('s-detail');
+  if(scr) scr.classList.add('active');
+  const nb=document.getElementById('nb-'+id);
+  if(nb) nb.classList.add('on');
+  else if(id==='detail') document.getElementById('nb-contacts').classList.add('on');
+  const renders={dash:renderDash,contacts:renderContacts,pipeline:renderPipeline,activity:renderActivity,follow:renderFollow};
+  if(renders[id]) renders[id]();
+  else if(id==='detail'){} // rendered by openDetail
+  fillSels();
+}
+
+// HELPERS
+function av(name,idx){
+  const [bg,fg]=PAL[idx%PAL.length];
+  const parts=name.trim().split(' ').filter(Boolean);
+  const init=(parts[0]?.[0]||'')+(parts[parts.length>1?parts.length-1:1]?.[0]||'');
+  return {bg,fg,init:init.toUpperCase()};
+}
+function badge(s){return `<span class="bdg ${SBADGE[s]||'sP'}">${s}</span>`;}
+function today(){return new Date().toISOString().split('T')[0];}
+function dayDiff(d){return Math.round((new Date(d)-new Date(today()))/86400000);}
+function urgLabel(d){const dd=dayDiff(d);return dd<0?`Vencido hace ${Math.abs(dd)}d`:dd===0?'Hoy':`En ${dd}d`;}
+function urgColor(d){const dd=dayDiff(d);return dd<0?'var(--R)':dd===0?'var(--A)':'var(--T)';}
+function urgClass(d){const dd=dayDiff(d);return dd<0?'venc':dd===0?'hoy':'prox';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity=1;clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity=0,2300);}
+function fillSels(){
+  ['pe-c','ac-c','fo-c','mg-c'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    el.innerHTML='<option value="">Selecciona...</option>'+contacts.map(c=>`<option value="${c.id}">${c.name}${c.company?' · '+c.company:''}</option>`).join('');
+    if(cur)el.value=cur;
+  });
+}
+
+// ─── DASHBOARD ─────────────────────────────────────────────────────────────
+function renderDash(){
+  const cli=contacts.filter(c=>c.stage==='Cliente').length;
+  const pipe=contacts.filter(c=>!['Prospecto','Cliente'].includes(c.stage)).length;
+  const pend=contacts.filter(c=>c.followDate&&c.followDate<=today()).length;
+  const urg=contacts.filter(c=>c.followDate&&c.followDate<=today()).sort((a,b)=>a.followDate.localeCompare(b.followDate)).slice(0,4);
+  const rec=activities.slice(-4).reverse();
+  const pct=Math.min(Math.round((cli/6)*100),100);
+  document.getElementById('s-dash').innerHTML=`
+    <div class="sec">Tu práctica hoy</div>
+    <div class="mg">
+      <div class="mc"><div class="mc-bar" style="background:var(--T)"></div><div class="mc-lbl">Red total</div><div class="mc-val">${contacts.length}</div><div class="mc-sub">contactos</div></div>
+      <div class="mc"><div class="mc-bar" style="background:var(--P)"></div><div class="mc-lbl">Clientes</div><div class="mc-val">${cli}</div><div class="mc-sub">activos</div></div>
+      <div class="mc"><div class="mc-bar" style="background:var(--A)"></div><div class="mc-lbl">En proceso</div><div class="mc-val">${pipe}</div><div class="mc-sub">en pipeline</div></div>
+      <div class="mc"><div class="mc-bar" style="background:#E24B4A"></div><div class="mc-lbl">Seguimientos</div><div class="mc-val">${pend}</div><div class="mc-sub">pendientes</div></div>
+    </div>
+    <div class="sec">Meta</div>
+    <div class="goal">
+      <div class="goal-row"><span class="goal-lbl">Camino a 6 clientes</span><span class="goal-num">${cli}/6</span></div>
+      <div class="goal-track"><div class="goal-fill" style="width:${pct}%"></div></div>
+      <div class="goal-dots">${Array.from({length:6},(_,i)=>`<div class="gdot${i<cli?' on':''}"></div>`).join('')}</div>
+    </div>
+    <div class="sec">Seguimientos urgentes</div>
+    <div class="card" style="padding:4px 14px 4px;">
+      ${urg.length?urg.map(c=>`<div class="ai"><div class="ai-dot" style="background:${urgColor(c.followDate)};"></div><div style="flex:1;"><div class="ai-name">${c.name}</div><div class="ai-sub">${c.company||'—'} · <b style="color:${urgColor(c.followDate)};">${urgLabel(c.followDate)}</b></div></div><button class="btn-sm" onclick="openDetail(${c.id})" style="flex-shrink:0;font-size:11px;">Ver</button></div>`).join(''):'<div class="empty">Sin seguimientos próximos</div>'}
+    </div>
+    <div class="sec">Actividad reciente</div>
+    <div class="card" style="padding:4px 14px 4px;">
+      ${rec.length?rec.map(a=>`<div class="ai"><div class="ai-dot" style="background:var(--T);"></div><div><div class="ai-name">${a.contact} · <span style="color:var(--txt2)">${a.type}</span></div><div class="ai-sub">${a.date}${a.next?' · '+a.next:''}</div></div></div>`).join(''):'<div class="empty">Registra tu primera interacción</div>'}
+    </div>
+    <div style="height:16px;"></div>`;
+}
+
+// ─── CONTACTS ──────────────────────────────────────────────────────────────
+function renderContacts(){
+  const el=document.getElementById('s-contacts');
+  let list=contacts;
+  if(cFilter)list=list.filter(c=>c.stage===cFilter);
+  if(cSearch){const q=cSearch.toLowerCase();list=list.filter(c=>(c.name+c.company+c.email).toLowerCase().includes(q));}
+  el.innerHTML=`
+    <div class="search-wrap">
+      <svg class="search-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+      <input class="s-input" type="search" value="${cSearch}" placeholder="Nombre, empresa, email..." oninput="cSearch=this.value;renderContacts()">
+    </div>
+    <div class="chips">
+      <button class="chip${cFilter===''?' on':''}" onclick="cFilter='';renderContacts()">Todos <span style="opacity:.6">${contacts.length}</span></button>
+      ${STAGES.map(s=>{const n=contacts.filter(c=>c.stage===s).length;return `<button class="chip${cFilter===s?' on':''}" onclick="cFilter='${s}';renderContacts()">${s} <span style="opacity:.6">${n}</span></button>`;}).join('')}
+    </div>
+    ${list.length?list.map(c=>{
+      const {bg,fg,init}=av(c.name,contacts.indexOf(c));
+      return `<div class="card tap" onclick="openDetail(${c.id})">
+        <div class="crow">
+          <div class="av" style="background:${bg};color:${fg};">${init}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="c-name">${c.name}</div>
+            <div class="c-meta">${[c.company,c.role||c.dept].filter(Boolean).join(' · ')||'Sin empresa'}</div>
+            <div class="c-badges">${badge(c.stage)}${c.project?`<span class="bdg bdg-gray">${c.project}</span>`:''}</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>`;
+    }).join(''):'<div class="empty">Sin resultados</div>'}
+    <div style="height:16px;"></div>`;
+}
+
+// ─── DETAIL ────────────────────────────────────────────────────────────────
+function openDetail(id){
+  editId=id;
+  const c=contacts.find(x=>x.id===id);if(!c)return;
+  const {bg,fg,init}=av(c.name,contacts.indexOf(c));
+  const myActs=activities.filter(a=>a.cid===id).slice(-5).reverse();
+  document.getElementById('s-detail').innerHTML=`
+    <div class="pad">
+      <button class="btn-ghost" onclick="nav('contacts')" style="margin-bottom:14px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Volver
+      </button>
+      <div class="card">
+        <div class="det-header">
+          <div class="det-av" style="background:${bg};color:${fg};">${init}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="det-name">${c.name}</div>
+            <div class="det-co">${c.company||'Sin empresa'}</div>
+            <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;">${badge(c.stage)}</div>
+          </div>
+        </div>
+        <div class="div" style="margin:12px 0;"></div>
+        ${fldRow('Email',c.email,'email',id)}
+        ${fldRow('Teléfono',c.phone,'phone',id)}
+        ${fldRow('Empresa',c.company,'company',id)}
+        ${fldRow('Rol',c.role,'role',id)}
+        ${fldRow('Proyecto',c.project,'project',id)}
+        ${fldRow('Valor (MXN)',c.value,'value',id)}
+        ${fldRow('Próx. contacto',c.followDate,'followDate',id)}
+        <div class="div" style="margin:12px 0;"></div>
+        <div class="flbl">Notas</div>
+        <textarea class="ftxt" id="ef-n" style="margin-bottom:12px;">${c.notes||''}</textarea>
+        <button class="btn-primary" onclick="saveDet(${id})">Guardar cambios</button>
+      </div>
+      <div class="sec" style="padding-left:0;">Generar mensaje</div>
+      <div class="card" style="padding:12px 14px;">
+        <div style="display:flex;gap:8px;">
+          <button class="btn-sm" style="flex:1;" onclick="openMsgModal(${id},'WhatsApp')">WhatsApp</button>
+          <button class="btn-sm" style="flex:1;" onclick="openMsgModal(${id},'Email')">Email</button>
+          <button class="btn-sm" style="flex:1;" onclick="openMsgModal(${id},'Seguimiento')">Seguimiento</button>
+        </div>
+      </div>
+      <div class="sec" style="padding-left:0;">Historial</div>
+      <div class="card" style="padding:4px 14px;">
+        ${myActs.length?myActs.map(a=>`<div class="ai"><div class="ai-dot" style="background:var(--T);"></div><div><div class="ai-name">${a.type} · ${a.date}</div>${a.notes?`<div class="ai-sub">${a.notes.slice(0,80)}${a.notes.length>80?'…':''}</div>`:''}</div></div>`).join(''):'<div class="empty">Sin actividad</div>'}
+      </div>
+      <div style="height:16px;"></div>
+    </div>`;
+  nav('detail');
+}
+
+function fldRow(label,val,key,id){
+  const safe=(val||'').replace(/"/g,'&quot;');
+  return `<div class="fld-row"><span class="fld-lbl">${label}</span><input class="fld-val" value="${safe}" placeholder="—" onchange="updField(${id},'${key}',this.value)"></div>`;
+}
+function updField(id,key,val){const c=contacts.find(x=>x.id===id);if(c){c[key]=val;tSet('crm4_contacts',contacts);}}
+function saveDet(id){const c=contacts.find(x=>x.id===id);if(c){c.notes=document.getElementById('ef-n').value;tSet('crm4_contacts',contacts);toast('Guardado');}}
+
+// ─── PIPELINE ──────────────────────────────────────────────────────────────
+function renderPipeline(){
+  const total=contacts.length||1;
+  document.getElementById('s-pipeline').innerHTML=`
+    <div class="sec">Embudo de conversión</div>
+    ${STAGES.map(s=>{
+      const list=contacts.filter(c=>c.stage===s);
+      const pct=Math.round((list.length/total)*100);
+      return `<div class="pipe-stage">
+        <div class="pipe-row"><span class="pipe-lbl">${s}</span><span class="pipe-cnt">${list.length} contacto${list.length!==1?'s':''} · ${pct}%</span></div>
+        <div class="pipe-track"><div class="pipe-fill" style="width:${Math.max(pct,1)}%;background:${SCOL[s]};"></div></div>
+        <div class="pipe-pills">${list.map(c=>`<span class="ppill" onclick="openDetail(${c.id})">${c.name.split(' ').slice(0,2).join(' ')}</span>`).join('')}</div>
+      </div>`;
+    }).join('')}
+    <div class="div"></div>
+    <div class="sec">Actualizar etapa</div>
+    <div class="form-card">
+      <label class="flbl">Contacto</label>
+      <select class="fsel" id="pe-c"><option value="">Selecciona...</option></select>
+      <label class="flbl">Nueva etapa</label>
+      <select class="fsel" id="pe-s">
+        <option value="Prospecto">Prospecto</option>
+        <option value="Contactado">Contactado</option>
+        <option value="Reunión">Reunión agendada</option>
+        <option value="Propuesta">Propuesta enviada</option>
+        <option value="Cliente">Cliente activo</option>
+      </select>
+      <label class="flbl">Proyecto</label>
+      <input class="finput" id="pe-p" placeholder="Nombre del proyecto...">
+      <label class="flbl">Valor estimado (MXN)</label>
+      <input class="finput" type="number" id="pe-v" placeholder="0">
+      <button class="btn-primary" onclick="moveStage()">Actualizar etapa</button>
+    </div>
+    <div style="height:16px;"></div>`;
+  fillSels();
+}
+
+function moveStage(){
+  const cid=document.getElementById('pe-c').value;
+  const s=document.getElementById('pe-s').value;
+  const p=document.getElementById('pe-p').value;
+  const v=document.getElementById('pe-v').value;
+  if(!cid){toast('Selecciona un contacto');return;}
+  const c=contacts.find(x=>x.id==cid);
+  c.stage=s;if(p)c.project=p;if(v)c.value=v;
+  tSet('crm4_contacts',contacts);
+  document.getElementById('pe-p').value='';document.getElementById('pe-v').value='';
+  renderPipeline();toast(`${c.name.split(' ')[0]} → ${s}`);
+}
+
+// ─── ACTIVITY ──────────────────────────────────────────────────────────────
+function renderActivity(){
+  const list=activities.slice(-25).reverse();
+  document.getElementById('s-activity').innerHTML=`
+    <div class="sec">Registrar interacción</div>
+    <div class="form-card">
+      <label class="flbl">Contacto</label>
+      <select class="fsel" id="ac-c"><option value="">Selecciona...</option></select>
+      <label class="flbl">Tipo</label>
+      <select class="fsel" id="ac-t"><option>Llamada</option><option>WhatsApp</option><option>Email</option><option>Café / reunión</option><option>Videollamada</option><option>Propuesta enviada</option><option>Seguimiento</option></select>
+      <label class="flbl">Fecha</label>
+      <input class="finput" type="date" id="ac-d" value="${today()}">
+      <label class="flbl">Notas de la conversación</label>
+      <button class="voice-btn" id="voice-btn" onclick="toggleVoice()">
+        <div class="voice-dot"></div>
+        <span id="voice-lbl">Dictar nota de voz</span>
+      </button>
+      <textarea class="ftxt" id="ac-n" placeholder="¿De qué hablaron? ¿Qué dolores mencionó? ¿Qué le interesó?"></textarea>
+      <label class="flbl">Próximo paso acordado</label>
+      <input class="finput" id="ac-np" placeholder="¿Qué sigue?">
+      <label class="flbl">Fecha para volver a contactar</label>
+      <input class="finput" type="date" id="ac-fd">
+      <button class="btn-primary" onclick="saveAct()">Guardar actividad</button>
+    </div>
+    <div class="sec">Historial</div>
+    <div class="card" style="padding:4px 14px;">
+      ${list.length?list.map(a=>`<div class="ai"><div class="ai-dot" style="background:var(--T);"></div><div style="flex:1;min-width:0;"><div class="ai-name">${a.contact} · <span style="color:var(--txt2)">${a.type}</span></div><div class="ai-sub">${a.date}${a.notes?' · '+a.notes.slice(0,55)+(a.notes.length>55?'…':''):''}</div>${a.next?`<div class="ai-sub" style="color:var(--A);">Próx: ${a.next}</div>`:''}</div></div>`).join(''):'<div class="empty">Sin actividades</div>'}
+    </div>
+    <div style="height:16px;"></div>`;
+  fillSels();
+  initVoice();
+}
+
+function saveAct(){
+  const cid=document.getElementById('ac-c').value;
+  const type=document.getElementById('ac-t').value;
+  const date=document.getElementById('ac-d').value;
+  const notes=document.getElementById('ac-n').value;
+  const next=document.getElementById('ac-np').value;
+  const fd=document.getElementById('ac-fd').value;
+  if(!cid){toast('Selecciona un contacto');return;}
+  const c=contacts.find(x=>x.id==cid);
+  activities.push({id:Date.now(),cid:parseInt(cid),contact:c.name,type,date,notes,next,followDate:fd});
+  tSet('crm4_activities',activities);
+  if(fd){c.followDate=fd;}
+  c.lastActivity=type;c.lastActivityDate=date;
+  tSet('crm4_contacts',contacts);
+  ['ac-n','ac-np','ac-fd'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  renderActivity();toast('Actividad guardada');
+}
+
+// VOICE
+function initVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) {
+    const vb=document.getElementById('voice-btn');
+    if(vb)vb.style.display='none';
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.lang='es-MX';recognition.continuous=true;recognition.interimResults=true;
+  recognition.onresult=e=>{
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    const ta=document.getElementById('ac-n');
+    if(ta&&final)ta.value+=(ta.value?' ':'')+final;
+  };
+  recognition.onend=()=>{
+    isRecording=false;
+    const vb=document.getElementById('voice-btn');
+    const vl=document.getElementById('voice-lbl');
+    if(vb){vb.classList.remove('recording');}
+    if(vl)vl.textContent='Dictar nota de voz';
+  };
+}
+function toggleVoice(){
+  if(!recognition)return;
+  if(isRecording){recognition.stop();isRecording=false;}
+  else{
+    recognition.start();isRecording=true;
+    const vb=document.getElementById('voice-btn');
+    const vl=document.getElementById('voice-lbl');
+    if(vb)vb.classList.add('recording');
+    if(vl)vl.textContent='Grabando — toca para detener';
+  }
+}
+
+// ─── FOLLOW ────────────────────────────────────────────────────────────────
+function renderFollow(){
+  const fromC=contacts.filter(c=>c.followDate&&c.stage!=='Cliente').map(c=>({id:'c'+c.id,cid:c.id,contact:c.name,company:c.company,date:c.followDate,notes:'',done:false}));
+  const manual=followups.filter(f=>!f.done);
+  const seen=new Set(manual.map(f=>f.cid));
+  const all=[...manual,...fromC.filter(f=>!seen.has(f.cid))].sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('s-follow').innerHTML=`
+    <div class="sec">Próximos seguimientos</div>
+    ${all.length?all.map(f=>`
+      <div class="fu-card ${urgClass(f.date)}">
+        <div class="fu-inner">
+          <div class="fu-info">
+            <div class="fu-name">${f.contact}</div>
+            ${f.company?`<div class="fu-note">${f.company}</div>`:''}
+            ${f.notes?`<div class="fu-note">${f.notes}</div>`:''}
+            <div class="fu-date" style="color:${urgColor(f.date)};">${f.date} · ${urgLabel(f.date)}</div>
+          </div>
+          <div class="fu-acts">
+            <button class="btn-done" onclick="doneFU('${f.id}',${f.cid})">Hecho</button>
+            <button class="btn-sm" onclick="openDetail(${f.cid})">Ver</button>
+          </div>
+        </div>
+      </div>`).join(''):'<div class="empty" style="margin:0 16px;">Sin seguimientos pendientes</div>'}
+    <div class="div"></div>
+    <div class="sec">Nuevo recordatorio</div>
+    <div class="form-card">
+      <label class="flbl">Contacto</label>
+      <select class="fsel" id="fo-c"><option value="">Selecciona...</option></select>
+      <label class="flbl">Fecha</label>
+      <input class="finput" type="date" id="fo-d" value="${today()}">
+      <label class="flbl">Motivo</label>
+      <textarea class="ftxt" id="fo-n" placeholder="¿Para qué vas a contactarlo?"></textarea>
+      <button class="btn-primary" onclick="saveFU()">Guardar recordatorio</button>
+    </div>
+    <div style="height:16px;"></div>`;
+  fillSels();
+}
+
+function saveFU(){
+  const cid=document.getElementById('fo-c').value;
+  const date=document.getElementById('fo-d').value;
+  const notes=document.getElementById('fo-n').value;
+  if(!cid||!date){toast('Contacto y fecha son obligatorios');return;}
+  const c=contacts.find(x=>x.id==cid);
+  followups.push({id:Date.now(),cid:parseInt(cid),contact:c.name,company:c.company,date,notes,done:false});
+  tSet('crm4_followups',followups);
+  c.followDate=date;tSet('crm4_contacts',contacts);
+  document.getElementById('fo-n').value='';
+  renderFollow();toast('Recordatorio guardado');
+}
+function doneFU(id,cid){
+  const f=followups.find(x=>String(x.id)===String(id));
+  if(f){f.done=true;tSet('crm4_followups',followups);}
+  const c=contacts.find(x=>x.id===cid);
+  if(c){c.followDate='';tSet('crm4_contacts',contacts);}
+  renderFollow();toast('Marcado como hecho');
+}
+
+// ─── MSG GENERATOR ─────────────────────────────────────────────────────────
+let currentMsg='';
+
+async function openMsgModal(id,tipo){
+  msgContact=contacts.find(x=>x.id===id);
+  if(!msgContact)return;
+  document.getElementById('msg-title').textContent=`${tipo} para ${msgContact.name.split(' ')[0]}`;
+  document.getElementById('msg-modal').classList.add('open');
+  document.getElementById('msg-out').textContent='Generando...';
+  currentMsg='';
+  await genMsgFor(tipo);
+}
+function closeMsgModal(e){if(e.target===document.getElementById('msg-modal'))document.getElementById('msg-modal').classList.remove('open');}
+
+async function genMsgFor(tipo){
+  if(!msgContact)return;
+  const c=msgContact;
+  const prompt=`Eres Rolando, consultor de coaching organizacional en México. Escribe un mensaje corto, cálido y natural en español (no formal, no robótico) para ${tipo === 'Email'?'email':'WhatsApp'}.
+
+Contacto: ${c.name}
+Empresa: ${c.company||'no especificada'}
+Rol: ${c.role||c.dept||'no especificado'}
+Etapa en el proceso: ${c.stage}
+Proyecto: ${c.project||'no iniciado'}
+Notas del contacto: ${c.notes||'ninguna'}
+
+Contexto de Rolando: ayuda a dueños de negocio a institucionalizar sus empresas, delegar, crear sistemas de toma de decisiones, clarificar visión y metas, implementar tableros de control (KPIs). Tiene al menos un cliente con resultados demostrados.
+
+El objetivo de este mensaje es ${c.stage==='Prospecto'?'abrir una conversación de café o reunión informal':c.stage==='Contactado'?'dar seguimiento y proponer una reunión más formal':c.stage==='Reunión'?'confirmar o hacer seguimiento post-reunión':c.stage==='Propuesta'?'dar seguimiento a la propuesta enviada':'mantener la relación con el cliente activo'}.
+
+Escribe SOLO el mensaje, sin explicaciones, sin encabezados, sin formato markdown. Máximo 5 oraciones. Natural, como si lo escribiera un amigo de confianza.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await resp.json();
+    const text=data?.content?.[0]?.text||'No se pudo generar el mensaje.';
+    currentMsg=text;
+    document.getElementById('msg-out').textContent=text;
+  }catch(e){
+    currentMsg=`Hola ${c.name.split(' ')[0]}, espero que estés muy bien. Te escribo para seguir la conversación que tuvimos. ¿Tienes 20 minutos esta semana para un café?`;
+    document.getElementById('msg-out').textContent=currentMsg;
+  }
+}
+
+async function genMsg(){
+  document.getElementById('msg-out').textContent='Regenerando...';
+  const tipo=document.getElementById('msg-title').textContent.split(' para ')[0];
+  await genMsgFor(tipo);
+}
+function copyMsg(){navigator.clipboard?.writeText(currentMsg).then(()=>toast('Copiado al portapapeles'));}
+function sendWA(){if(!currentMsg)return;const enc=encodeURIComponent(currentMsg);const phone=msgContact?.phone?.replace(/\D/g,'')||'';window.open(`https://wa.me/${phone}?text=${enc}`);}
+
+// ─── SYNC ──────────────────────────────────────────────────────────────────
+async function syncNow(){
+  const dot=document.getElementById('sdot');
+  const lbl=document.getElementById('slbl');
+  const st=document.getElementById('sync-st');
+  dot.classList.add('pulsing');lbl.textContent='Sincronizando...';
+  await new Promise(r=>setTimeout(r,1200));
+  dot.classList.remove('pulsing');
+  const now=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  st.textContent=`${contacts.length} contactos · sync ${now}`;
+  lbl.textContent='Sync';
+  toast('Datos guardados localmente');
+}
+
+// BOOT
+init();
+</script>
+</body>
+</html>
