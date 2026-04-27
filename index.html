@@ -223,6 +223,38 @@
 
 <div id="toast"></div>
 
+<!-- NEW CONTACT MODAL -->
+<div class="modal-bg" id="nc-modal" onclick="if(event.target===this)closeNewContact()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="modal-title" style="margin:0;">Nuevo contacto</div>
+      <button onclick="closeNewContact()" style="background:none;border:none;font-size:22px;color:var(--txt3);cursor:pointer;padding:0;line-height:1;">×</button>
+    </div>
+    <label class="flbl">Nombre completo *</label>
+    <input class="finput" id="nc-name" placeholder="Ej: Juan García López" autocomplete="name">
+    <label class="flbl">Empresa</label>
+    <input class="finput" id="nc-company" placeholder="Ej: ACME S.A. de C.V.">
+    <label class="flbl">Rol / puesto</label>
+    <input class="finput" id="nc-role" placeholder="Ej: Director General, CEO">
+    <label class="flbl">Email</label>
+    <input class="finput" type="email" id="nc-email" placeholder="correo@empresa.com">
+    <label class="flbl">Teléfono / WhatsApp</label>
+    <input class="finput" type="tel" id="nc-phone" placeholder="+52 844 000 0000">
+    <label class="flbl">Etapa inicial</label>
+    <select class="fsel" id="nc-stage">
+      <option value="Prospecto">Prospecto</option>
+      <option value="Contactado">Contactado</option>
+      <option value="Reunión">Reunión agendada</option>
+      <option value="Propuesta">Propuesta enviada</option>
+      <option value="Cliente">Cliente activo</option>
+    </select>
+    <label class="flbl">Notas iniciales</label>
+    <textarea class="ftxt" id="nc-notes" placeholder="¿Cómo lo conociste? ¿Qué sabes de su negocio?"></textarea>
+    <button class="btn-primary" onclick="saveNewContact()">Agregar contacto</button>
+  </div>
+</div>
+
 <!-- MSG MODAL -->
 <div class="modal-bg" id="msg-modal" onclick="closeMsgModal(event)">
   <div class="modal">
@@ -426,9 +458,14 @@ function renderContacts(){
   if(cFilter)list=list.filter(c=>c.stage===cFilter);
   if(cSearch){const q=cSearch.toLowerCase();list=list.filter(c=>(c.name+c.company+c.email).toLowerCase().includes(q));}
   el.innerHTML=`
-    <div class="search-wrap">
-      <svg class="search-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
-      <input class="s-input" type="search" value="${cSearch}" placeholder="Nombre, empresa, email..." oninput="cSearch=this.value;renderContacts()">
+    <div style="display:flex;gap:8px;padding:12px 16px 0;align-items:center;">
+      <div class="search-wrap" style="flex:1;padding:0;position:relative;">
+        <svg class="search-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt3);pointer-events:none;"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+        <input class="s-input" type="search" value="${cSearch}" placeholder="Nombre, empresa..." oninput="cSearch=this.value;renderContacts()">
+      </div>
+      <button onclick="openNewContact()" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;background:var(--T);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
     </div>
     <div class="chips">
       <button class="chip${cFilter===''?' on':''}" onclick="cFilter='';renderContacts()">Todos <span style="opacity:.6">${contacts.length}</span></button>
@@ -449,6 +486,42 @@ function renderContacts(){
       </div>`;
     }).join(''):'<div class="empty">Sin resultados</div>'}
     <div style="height:16px;"></div>`;
+}
+
+// ─── NEW CONTACT ────────────────────────────────────────────────────────────
+function openNewContact(){
+  document.getElementById('nc-modal').classList.add('open');
+}
+function closeNewContact(){
+  document.getElementById('nc-modal').classList.remove('open');
+  ['nc-name','nc-email','nc-company','nc-role','nc-phone','nc-notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('nc-stage').value='Prospecto';
+}
+function saveNewContact(){
+  const name=document.getElementById('nc-name').value.trim();
+  if(!name){toast('El nombre es obligatorio');return;}
+  const newId=Math.max(0,...contacts.map(c=>c.id))+1;
+  const c={
+    id:newId,
+    name,
+    email:document.getElementById('nc-email').value.trim(),
+    company:document.getElementById('nc-company').value.trim(),
+    role:document.getElementById('nc-role').value.trim(),
+    phone:document.getElementById('nc-phone').value.trim(),
+    dept:'',
+    stage:document.getElementById('nc-stage').value,
+    project:'',value:'',followDate:'',
+    notes:document.getElementById('nc-notes').value.trim(),
+    lastActivity:'',lastActivityDate:''
+  };
+  contacts.push(c);
+  tSet('crm4_contacts',contacts);
+  closeNewContact();
+  cFilter='';cSearch='';
+  renderContacts();
+  toast(`${name.split(' ')[0]} agregado`);
 }
 
 // ─── DETAIL ────────────────────────────────────────────────────────────────
