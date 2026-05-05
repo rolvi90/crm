@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -209,6 +210,11 @@
   .modal { background: var(--bg); border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + var(--safe-bottom)); width: 100%; max-width: 480px; max-height: 90dvh; overflow-y: auto; }
   .modal-handle { width: 36px; height: 4px; background: var(--brd2); border-radius: 2px; margin: 0 auto 16px; }
   .modal-title { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 14px; letter-spacing: -.3px; }
+  .btn-danger { width: 100%; padding: 10px; background: var(--R50); color: var(--R); border: 0.5px solid rgba(163,45,45,0.3); border-radius: var(--rad-sm); font-size: 14px; font-weight: 600; cursor: pointer; -webkit-appearance: none; margin-top: 4px; }
+  .btn-danger:active { opacity: 0.7; }
+  .btn-reactivate { width: 100%; padding: 10px; background: var(--T50); color: var(--T800); border: 0.5px solid var(--T); border-radius: var(--rad-sm); font-size: 14px; font-weight: 600; cursor: pointer; -webkit-appearance: none; margin-top: 4px; }
+  .sBaja { background: var(--bg3); color: var(--txt3); }
+  .card-inactive { opacity: 0.55; }
 </style>
 </head>
 <body>
@@ -272,6 +278,7 @@
 </div>
 
 <script>
+const SHEET_URL='https://script.google.com/macros/s/AKfycbxUjTKQDgrDf7atv_CkYpLVExp3srWBj8v6vcTz-_i2XeFHA4tNUyeDxMZROuk91sTV/exec'; // ← Google Apps Script web app
 const PAL=[['#E1F5EE','#1D9E75'],['#E6F1FB','#185FA5'],['#EEEDFE','#534AB7'],['#FAEEDA','#BA7517'],['#FAECE7','#D85A30'],['#F1EFE8','#5F5E5A'],['#FBEAF0','#993556'],['#EAF3DE','#3B6D11']];
 const STAGES=['Prospecto','Contactado','Reunión','Propuesta','Cliente'];
 const SCOL={Prospecto:'#378ADD',Contactado:'#BA7517','Reunión':'#534AB7',Propuesta:'#D85A30',Cliente:'#1D9E75'};
@@ -321,9 +328,9 @@ function tSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 // INIT
 function init(){
   const s=tGet('crm4_contacts');
-  if(s&&s.length){contacts=s;}
+  if(s&&s.length){contacts=s.map(c=>({active:true,...c}));}
   else{
-    contacts=RAW.map((r,i)=>({id:i+1,...r,stage:'Prospecto',project:'',value:'',followDate:'',phone:r.phone||'',notes:r.notes||'',lastActivity:'',lastActivityDate:''}));
+    contacts=RAW.map((r,i)=>({id:i+1,...r,stage:'Prospecto',project:'',value:'',followDate:'',phone:r.phone||'',notes:r.notes||'',lastActivity:'',lastActivityDate:'',active:true}));
     tSet('crm4_contacts',contacts);
   }
   activities=tGet('crm4_activities')||[];
@@ -420,16 +427,17 @@ function fillSels(){
 
 // ─── DASHBOARD ─────────────────────────────────────────────────────────────
 function renderDash(){
-  const cli=contacts.filter(c=>c.stage==='Cliente').length;
-  const pipe=contacts.filter(c=>!['Prospecto','Cliente'].includes(c.stage)).length;
-  const pend=contacts.filter(c=>c.followDate&&c.followDate<=today()).length;
-  const urg=contacts.filter(c=>c.followDate&&c.followDate<=today()).sort((a,b)=>a.followDate.localeCompare(b.followDate)).slice(0,4);
+  const act=contacts.filter(c=>c.active!==false);
+  const cli=act.filter(c=>c.stage==='Cliente').length;
+  const pipe=act.filter(c=>!['Prospecto','Cliente'].includes(c.stage)).length;
+  const pend=act.filter(c=>c.followDate&&c.followDate<=today()).length;
+  const urg=act.filter(c=>c.followDate&&c.followDate<=today()).sort((a,b)=>a.followDate.localeCompare(b.followDate)).slice(0,4);
   const rec=activities.slice(-4).reverse();
   const pct=Math.min(Math.round((cli/6)*100),100);
   document.getElementById('s-dash').innerHTML=`
     <div class="sec">Tu práctica hoy</div>
     <div class="mg">
-      <div class="mc"><div class="mc-bar" style="background:var(--T)"></div><div class="mc-lbl">Red total</div><div class="mc-val">${contacts.length}</div><div class="mc-sub">contactos</div></div>
+      <div class="mc"><div class="mc-bar" style="background:var(--T)"></div><div class="mc-lbl">Red total</div><div class="mc-val">${act.length}</div><div class="mc-sub">contactos</div></div>
       <div class="mc"><div class="mc-bar" style="background:var(--P)"></div><div class="mc-lbl">Clientes</div><div class="mc-val">${cli}</div><div class="mc-sub">activos</div></div>
       <div class="mc"><div class="mc-bar" style="background:var(--A)"></div><div class="mc-lbl">En proceso</div><div class="mc-val">${pipe}</div><div class="mc-sub">en pipeline</div></div>
       <div class="mc"><div class="mc-bar" style="background:#E24B4A"></div><div class="mc-lbl">Seguimientos</div><div class="mc-val">${pend}</div><div class="mc-sub">pendientes</div></div>
@@ -454,8 +462,11 @@ function renderDash(){
 // ─── CONTACTS ──────────────────────────────────────────────────────────────
 function renderContacts(){
   const el=document.getElementById('s-contacts');
-  let list=contacts;
-  if(cFilter)list=list.filter(c=>c.stage===cFilter);
+  const active=contacts.filter(c=>c.active!==false);
+  const bajas=contacts.filter(c=>c.active===false);
+  let list;
+  if(cFilter==='Baja'){list=bajas;}
+  else{list=active;if(cFilter)list=list.filter(c=>c.stage===cFilter);}
   if(cSearch){const q=cSearch.toLowerCase();list=list.filter(c=>(c.name+c.company+c.email).toLowerCase().includes(q));}
   el.innerHTML=`
     <div style="display:flex;gap:8px;padding:12px 16px 0;align-items:center;">
@@ -468,18 +479,20 @@ function renderContacts(){
       </button>
     </div>
     <div class="chips">
-      <button class="chip${cFilter===''?' on':''}" onclick="cFilter='';renderContacts()">Todos <span style="opacity:.6">${contacts.length}</span></button>
-      ${STAGES.map(s=>{const n=contacts.filter(c=>c.stage===s).length;return `<button class="chip${cFilter===s?' on':''}" onclick="cFilter='${s}';renderContacts()">${s} <span style="opacity:.6">${n}</span></button>`;}).join('')}
+      <button class="chip${cFilter===''?' on':''}" onclick="cFilter='';renderContacts()">Todos <span style="opacity:.6">${active.length}</span></button>
+      ${STAGES.map(s=>{const n=active.filter(c=>c.stage===s).length;return `<button class="chip${cFilter===s?' on':''}" onclick="cFilter='${s}';renderContacts()">${s} <span style="opacity:.6">${n}</span></button>`;}).join('')}
+      ${bajas.length?`<button class="chip${cFilter==='Baja'?' on':''}" onclick="cFilter='Baja';renderContacts()" style="${cFilter==='Baja'?'':'color:var(--R);border-color:rgba(163,45,45,0.3);'}">Bajas <span style="opacity:.6">${bajas.length}</span></button>`:''}
     </div>
     ${list.length?list.map(c=>{
       const {bg,fg,init}=av(c.name,contacts.indexOf(c));
-      return `<div class="card tap" onclick="openDetail(${c.id})">
+      const isInactive=c.active===false;
+      return `<div class="card tap${isInactive?' card-inactive':''}" onclick="openDetail(${c.id})">
         <div class="crow">
           <div class="av" style="background:${bg};color:${fg};">${init}</div>
           <div style="flex:1;min-width:0;">
             <div class="c-name">${c.name}</div>
             <div class="c-meta">${[c.company,c.role||c.dept].filter(Boolean).join(' · ')||'Sin empresa'}</div>
-            <div class="c-badges">${badge(c.stage)}${c.project?`<span class="bdg bdg-gray">${c.project}</span>`:''}</div>
+            <div class="c-badges">${isInactive?'<span class="bdg sBaja">Baja</span>':badge(c.stage)}${c.project?`<span class="bdg bdg-gray">${c.project}</span>`:''}</div>
           </div>
           <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
         </div>
@@ -553,10 +566,16 @@ function openDetail(id){
         ${fldRow('Proyecto',c.project,'project',id)}
         ${fldRow('Valor (MXN)',c.value,'value',id)}
         ${fldRow('Próx. contacto',c.followDate,'followDate',id)}
+        ${fldSel('Etapa',c.stage,'stage',id,STAGES)}
         <div class="div" style="margin:12px 0;"></div>
         <div class="flbl">Notas</div>
         <textarea class="ftxt" id="ef-n" style="margin-bottom:12px;">${c.notes||''}</textarea>
         <button class="btn-primary" onclick="saveDet(${id})">Guardar cambios</button>
+        <div class="div" style="margin:14px 0 10px;"></div>
+        ${c.active===false
+          ? `<button class="btn-reactivate" onclick="reactivateContact(${id})">Reactivar contacto</button>`
+          : `<button class="btn-danger" onclick="deactivateContact(${id})">Dar de baja este contacto</button>`
+        }
       </div>
       <div class="sec" style="padding-left:0;">Generar mensaje</div>
       <div class="card" style="padding:12px 14px;">
@@ -579,8 +598,20 @@ function fldRow(label,val,key,id){
   const safe=(val||'').replace(/"/g,'&quot;');
   return `<div class="fld-row"><span class="fld-lbl">${label}</span><input class="fld-val" value="${safe}" placeholder="—" onchange="updField(${id},'${key}',this.value)"></div>`;
 }
+function fldSel(label,val,key,id,opts){
+  return `<div class="fld-row"><span class="fld-lbl">${label}</span><select class="fld-val" style="cursor:pointer;text-align:right;-webkit-appearance:none;" onchange="updField(${id},'${key}',this.value)">${opts.map(o=>`<option value="${o}"${val===o?' selected':''}>${o}</option>`).join('')}</select></div>`;
+}
 function updField(id,key,val){const c=contacts.find(x=>x.id===id);if(c){c[key]=val;tSet('crm4_contacts',contacts);}}
 function saveDet(id){const c=contacts.find(x=>x.id===id);if(c){c.notes=document.getElementById('ef-n').value;tSet('crm4_contacts',contacts);toast('Guardado');}}
+function deactivateContact(id){
+  if(!confirm('¿Dar de baja este contacto? Quedará inactivo pero no se eliminará y podrás reactivarlo cuando quieras.'))return;
+  const c=contacts.find(x=>x.id===id);
+  if(c){c.active=false;tSet('crm4_contacts',contacts);nav('contacts');toast(`${c.name.split(' ')[0]} dado de baja`);}
+}
+function reactivateContact(id){
+  const c=contacts.find(x=>x.id===id);
+  if(c){c.active=true;tSet('crm4_contacts',contacts);openDetail(id);toast(`${c.name.split(' ')[0]} reactivado`);}
+}
 
 // ─── PIPELINE ──────────────────────────────────────────────────────────────
 function renderPipeline(){
@@ -842,12 +873,25 @@ async function syncNow(){
   const lbl=document.getElementById('slbl');
   const st=document.getElementById('sync-st');
   dot.classList.add('pulsing');lbl.textContent='Sincronizando...';
-  await new Promise(r=>setTimeout(r,1200));
-  dot.classList.remove('pulsing');
-  const now=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-  st.textContent=`${contacts.length} contactos · sync ${now}`;
-  lbl.textContent='Sync';
-  toast('Datos guardados localmente');
+  if(!SHEET_URL){
+    await new Promise(r=>setTimeout(r,700));
+    dot.classList.remove('pulsing');lbl.textContent='Sync';
+    st.textContent=`${contacts.filter(c=>c.active!==false).length} contactos · solo local`;
+    toast('Configura SHEET_URL para sincronizar con Drive');
+    return;
+  }
+  try{
+    const payload={contacts,activities,followups};
+    const resp=await fetch(SHEET_URL,{method:'POST',body:JSON.stringify(payload)});
+    const data=await resp.json();
+    dot.classList.remove('pulsing');lbl.textContent='Sync';
+    const now=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+    st.textContent=`${contacts.filter(c=>c.active!==false).length} contactos · sync ${now}`;
+    toast('Sincronizado con Google Sheets ✓');
+  }catch(e){
+    dot.classList.remove('pulsing');lbl.textContent='Sync';
+    toast('Error al sincronizar — revisa la URL del script');
+  }
 }
 
 // BOOT
