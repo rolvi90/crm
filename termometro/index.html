@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0090B0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Termómetro">
+<title>Termómetro del Fundador</title>
+<style>
+:root{--teal:#00B4D8;--teal-dk:#0090B0;--teal-lt:#E0F7FC;--bg:#F4F6F9;--wh:#fff;--bd:#E5E7EB;--tx:#111827;--mu:#6B7280;--red:#DC2626;--red-bg:#FEE2E2;--red-bd:#FECACA;--nav-h:60px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+#app{max-width:520px;margin:0 auto;padding:0 16px calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px)}
+/* HEADER */
+header{padding:18px 2px 14px}
+.h-logo{font-size:15px;font-weight:800;color:var(--teal-dk);letter-spacing:.3px}
+.h-date{font-size:12px;color:var(--mu);margin-top:2px}
+/* CARDS */
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:14px}
+.card h2{font-size:15px;font-weight:700;margin-bottom:6px}
+.card p{font-size:13px;color:var(--mu);line-height:1.5}
+/* BUTTONS */
+.btn{display:block;width:100%;padding:13px 16px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;transition:background .15s;text-align:center}
+.btn-pr{background:var(--teal-dk);color:#fff}.btn-pr:active{background:#007A96}
+.btn-se{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.link{background:none;border:none;color:var(--teal-dk);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 0}
+/* CHECK-IN */
+.prog-track{height:4px;background:var(--bd);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.prog-fill{height:100%;background:var(--teal-dk);border-radius:2px;transition:width .2s}
+.q-step{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.q-area{display:inline-block;font-size:11px;font-weight:700;color:var(--teal-dk);background:var(--teal-lt);border-radius:20px;padding:2px 10px;margin-bottom:10px}
+.q-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.q-desc{font-size:13px;color:var(--mu);line-height:1.5;margin-bottom:16px}
+.q-opts{display:flex;flex-direction:column;gap:8px}
+.q-opt{padding:13px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--wh);font-size:14px;font-family:inherit;text-align:left;cursor:pointer;transition:all .12s;color:var(--tx)}
+.q-opt:active,.q-opt.sel{background:var(--teal-lt);border-color:var(--teal-dk);color:var(--teal-dk);font-weight:600}
+.q-back{margin-top:12px}
+/* RESULTADO */
+.hero{text-align:center;padding:26px 18px}
+.hero-lbl{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px}
+.hero-num{font-size:64px;font-weight:700;line-height:1.1;color:var(--teal-dk)}
+.hero-unit{font-size:15px;font-weight:600;color:var(--tx);margin-top:-2px}
+.hero-note{font-size:11px;color:var(--mu);margin-top:10px}
+.hero-frase{font-size:14px;margin-top:14px;line-height:1.5}
+.hero-q{font-size:13px;color:var(--mu);font-style:italic;margin-top:8px;line-height:1.5}
+/* ALERTA */
+.alert{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start}
+.alert svg{flex-shrink:0;margin-top:1px}
+.alert-t{font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px}
+.alert-b{font-size:13px;color:#7F1D1D;line-height:1.45}
+/* PAYWALL */
+.pay{text-align:center;padding:26px 20px}
+.pay svg{margin-bottom:10px}
+.pay h2{margin-bottom:8px}
+.pay p{margin-bottom:16px}
+.pay-note{font-size:11px;color:var(--mu);margin-top:10px}
+/* GRÁFICA */
+.range-row{display:flex;gap:8px;margin-bottom:12px}
+.range-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--wh);font-size:12px;font-weight:600;font-family:inherit;color:var(--mu);cursor:pointer}
+.range-btn.sel{background:var(--teal-lt);border-color:var(--teal-dk);color:var(--teal-dk)}
+.chart-wrap{position:relative}
+.chart-wrap svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.tip{position:absolute;pointer-events:none;background:var(--tx);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.4;white-space:nowrap;display:none;transform:translate(-50%,-110%);z-index:5}
+.tip b{font-size:13px}
+.tip .tip-d{color:#D1D5DB;font-size:11px}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd)}
+td{font-size:13px;padding:8px 6px;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+/* ÁREAS */
+.area-row{margin-bottom:14px}
+.area-row:last-child{margin-bottom:0}
+.area-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.area-nm{font-size:13px;font-weight:600}
+.area-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.area-weak{display:inline-block;font-size:10px;font-weight:700;color:var(--red);background:var(--red-bg);border-radius:20px;padding:1px 8px;margin-left:7px;vertical-align:1px}
+.meter{height:12px;background:var(--teal-lt);border-radius:0 4px 4px 0;overflow:hidden}
+.meter-fill{height:100%;background:var(--teal-dk);border-radius:0 4px 4px 0;transition:width .3s}
+.meter.gray{background:var(--bd)}.meter.gray .meter-fill{background:var(--mu)}
+.sec-note{font-size:11px;color:var(--mu);margin-bottom:14px}
+/* AJUSTES */
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--bd)}
+.set-row:last-child{border-bottom:none}
+.set-t{font-size:14px;font-weight:600}.set-d{font-size:12px;color:var(--mu);margin-top:2px;line-height:1.4}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0;cursor:pointer}
+.toggle input{display:none}
+.tg-track{position:absolute;inset:0;background:var(--bd);border-radius:20px;transition:background .15s}
+.tg-dot{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked + .tg-track{background:var(--teal-dk)}
+.toggle input:checked + .tg-track .tg-dot{left:23px}
+/* NAV */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);display:flex;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom);z-index:10}
+.nav-in{max-width:520px;width:100%;margin:0 auto;display:flex}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 7px;border:none;background:none;font-family:inherit;font-size:10px;font-weight:600;color:var(--mu);cursor:pointer}
+.tab.active{color:var(--teal-dk)}
+.tab svg{width:22px;height:22px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="h-logo">TERMÓMETRO DEL FUNDADOR</div>
+    <div class="h-date" id="hDate"></div>
+  </header>
+  <main id="view"></main>
+</div>
+<nav><div class="nav-in">
+  <button class="tab" data-v="hoy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/></svg>Hoy</button>
+  <button class="tab" data-v="tendencia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>Tendencia</button>
+  <button class="tab" data-v="areas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="14" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/></svg>Áreas</button>
+  <button class="tab" data-v="ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Ajustes</button>
+</div></nav>
+
+<script>
+'use strict';
+/* ============ DATOS ============ */
+const KEY='termometro_v1';
+let S=load();
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.checkins)return d;}catch(e){}
+  return {checkins:{},pro:false};
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+function todayKey(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function sorted(){return Object.keys(S.checkins).sort().map(k=>({date:k,...S.checkins[k]}));}
+function fmtDate(k,opts){const [y,m,d]=k.split('-').map(Number);return new Intl.DateTimeFormat('es-MX',opts||{day:'numeric',month:'short'}).format(new Date(y,m-1,d));}
+
+/* ============ PREGUNTAS ============ */
+const AREAS=['Utilidad y flujo','Ventas y marketing','Operación','Números e indicadores','Liderazgo y decisiones','Equipo'];
+const QS=[
+ {area:'P · Utilidad y flujo',t:'El dinero de hoy',d:'Cobros, pagos y decisiones de gasto. ¿Qué tanto dependieron de ti?'},
+ {area:'R · Ventas y marketing',t:'Las ventas de hoy',d:'Prospectos, seguimiento y cierres. ¿Qué tanto dependieron de ti?'},
+ {area:'O · Operación',t:'La operación de hoy',d:'Que el producto o servicio saliera bien y a tiempo. ¿Qué tanto dependió de ti?'},
+ {area:'F · Números e indicadores',t:'Los números de hoy',d:'La información para decidir: reportes, indicadores, cuentas por cobrar. ¿Qué tanto dependió de ti armarla o perseguirla?'},
+ {area:'I · Liderazgo y decisiones',t:'Las decisiones de hoy',d:'Lo que se decidió en el negocio. ¿Qué tanto pasó por tu escritorio?'},
+ {area:'T · Equipo',t:'Tu equipo hoy',d:'Que cada quien supiera qué hacer y lo hiciera. ¿Qué tanto tuviste que dirigir tú?'},
+ {area:'Tu energía',t:'Para cerrar: tú',d:'¿Cómo terminas el día?',energia:true}
+];
+const OPTS=['Todo pasó por mí','Casi todo pasó por mí','Mitad y mitad','Casi todo salió sin mí','Salió solo, sin mí'];
+const OPTS_E=['Fundido','Cansado','Normal','Bien','Con pila de sobra'];
+
+/* score: 6 respuestas 0-4. El área más débil pesa, porque por ahí se cae el negocio. */
+function calcDias(scores){
+  const avg=scores.reduce((a,b)=>a+b,0)/scores.length;
+  const mn=Math.min(...scores);
+  return Math.round((0.6*avg+0.4*mn)/4*30);
+}
+function frase(d){
+  if(d<=5)return ['Hoy casi todo pasó por tus manos.','¿Qué fue lo que solo tú pudiste resolver hoy, y quién más podría aprenderlo?'];
+  if(d<=12)return ['El negocio camina, pero contigo empujando.','¿Cuál de estas áreas vas a soltar primero?'];
+  if(d<=20)return ['Tu equipo ya carga una buena parte.','¿Qué falta documentar para que esto no dependa de tu memoria?'];
+  return ['El negocio opera sin colgarse de ti.','¿Cuándo fue la última vez que te desconectaste de verdad?'];
+}
+/* Alerta: dependencia subiendo 3 check-ins seguidos (los días de independencia cayeron 3 veces al hilo) */
+function alertaActiva(){
+  const a=sorted();if(a.length<4)return false;
+  const u=a.slice(-4).map(x=>x.dias);
+  return u[1]<u[0]&&u[2]<u[1]&&u[3]<u[2];
+}
+
+/* ============ NAVEGACIÓN ============ */
+let cur='hoy';
+let flow=null; /* {idx, answers[]} durante el check-in */
+let range=30;
+let showTable=false;
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{cur=b.dataset.v;flow=null;render();}));
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.v===cur));
+  const v=document.getElementById('view');
+  if(cur==='hoy')renderHoy(v);
+  else if(cur==='tendencia')renderTendencia(v);
+  else if(cur==='areas')renderAreas(v);
+  else renderAjustes(v);
+  window.scrollTo(0,0);
+}
+
+/* ============ VISTA: HOY ============ */
+function renderHoy(v){
+  if(flow){renderPregunta(v);return;}
+  const hoy=S.checkins[todayKey()];
+  let html='';
+  if(S.pro&&alertaActiva())html+=alertaHTML();
+  if(!hoy){
+    html+=`<div class="card">
+      <h2>El check-in de hoy</h2>
+      <p>Un minuto. Seis preguntas sobre cómo corrió el negocio hoy y una sobre ti. Al final, tu número: cuántos días podría operar esto sin ti.</p>
+      <div style="height:14px"></div>
+      <button class="btn btn-pr" id="btnStart">Empezar el check-in</button>
+    </div>`;
+    const a=sorted();
+    if(a.length&&!S.pro)html+=ultimoHTML(a[a.length-1]);
+  }else{
+    const [f,q]=frase(hoy.dias);
+    html+=`<div class="card hero">
+      <div class="hero-lbl">Días de independencia</div>
+      <div class="hero-num">${hoy.dias}</div>
+      <div class="hero-unit">${hoy.dias===1?'día':'días'} podría operar tu negocio sin ti</div>
+      <div class="hero-note">Estimado a partir de tu check-in de hoy</div>
+      <div class="hero-frase">${f}</div>
+      <div class="hero-q">${q}</div>
+      <div style="height:16px"></div>
+      <button class="link" id="btnRedo">Repetir el check-in de hoy</button>
+    </div>`;
+  }
+  v.innerHTML=html;
+  const bs=document.getElementById('btnStart');if(bs)bs.addEventListener('click',startFlow);
+  const br=document.getElementById('btnRedo');if(br)br.addEventListener('click',startFlow);
+}
+function ultimoHTML(u){
+  return `<div class="card"><h2>Tu último check-in</h2>
+  <p>${fmtDate(u.date,{weekday:'long',day:'numeric',month:'long'})}: ${u.dias} ${u.dias===1?'día':'días'} de independencia.</p></div>`;
+}
+function alertaHTML(){
+  return `<div class="alert">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div><div class="alert-t">Alerta de dependencia</div>
+    <div class="alert-b">Llevas tres check-ins seguidos con menos días de independencia. Algo está regresando a tus manos. ¿Qué es?</div></div>
+  </div>`;
+}
+
+/* ============ CHECK-IN ============ */
+function startFlow(){flow={idx:0,answers:[]};render();}
+function renderPregunta(v){
+  const q=QS[flow.idx];
+  const opts=q.energia?OPTS_E:OPTS;
+  const prev=flow.answers[flow.idx];
+  v.innerHTML=`<div class="card">
+    <div class="prog-track"><div class="prog-fill" style="width:${(flow.idx)/QS.length*100}%"></div></div>
+    <div class="q-step">Pregunta ${flow.idx+1} de ${QS.length}</div>
+    <div class="q-area">${q.area}</div>
+    <div class="q-title">${q.t}</div>
+    <div class="q-desc">${q.d}</div>
+    <div class="q-opts">${opts.map((o,i)=>`<button class="q-opt${prev===i?' sel':''}" data-i="${i}">${o}</button>`).join('')}</div>
+    ${flow.idx>0?'<button class="link q-back" id="qBack">Anterior</button>':''}
+  </div>`;
+  v.querySelectorAll('.q-opt').forEach(b=>b.addEventListener('click',()=>{
+    flow.answers[flow.idx]=+b.dataset.i;
+    b.classList.add('sel');
+    setTimeout(()=>{
+      if(flow.idx<QS.length-1){flow.idx++;render();}
+      else finishFlow();
+    },160);
+  }));
+  const bb=document.getElementById('qBack');if(bb)bb.addEventListener('click',()=>{flow.idx--;render();});
+}
+function finishFlow(){
+  const scores=flow.answers.slice(0,6);
+  S.checkins[todayKey()]={scores,energia:flow.answers[6],dias:calcDias(scores),ts:Date.now()};
+  save();flow=null;render();
+}
+
+/* ============ PAYWALL ============ */
+function paywallHTML(){
+  return `<div class="card pay">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0090B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <h2>Esto vive en la versión completa</h2>
+    <p>El número de hoy es gratis. El histórico, el desglose por área PROFIT y las alertas de dependencia van en la versión completa.</p>
+    <button class="btn btn-pr" id="btnPro">Quiero la versión completa</button>
+    <div class="pay-note">Prototipo: puedes activarla desde Ajustes para probarla.</div>
+  </div>`;
+}
+function wirePaywall(){const b=document.getElementById('btnPro');if(b)b.addEventListener('click',()=>{cur='ajustes';render();});}
+
+/* ============ VISTA: TENDENCIA ============ */
+function renderTendencia(v){
+  if(!S.pro){v.innerHTML=paywallHTML();wirePaywall();return;}
+  const all=sorted();
+  if(all.length<2){
+    v.innerHTML=`<div class="card"><h2>Tendencia</h2><p>Con dos o más check-ins aquí verás cómo se mueve tu independencia en el tiempo. Hoy ${all.length===1?'llevas uno':'no llevas ninguno'}.</p></div>`;
+    return;
+  }
+  const cut=new Date();cut.setDate(cut.getDate()-range+1);
+  const data=all.filter(x=>x.date>=todayKey(cut));
+  let html='';
+  if(alertaActiva())html+=alertaHTML();
+  html+=`<div class="range-row">${[7,30,90].map(r=>`<button class="range-btn${r===range?' sel':''}" data-r="${r}">${r} días</button>`).join('')}</div>
+  <div class="card">
+    <h2>Días de independencia</h2>
+    <p style="margin-bottom:10px">Cada punto es un check-in. Escala de 0 a 30 días.</p>
+    <div class="chart-wrap" id="chartWrap">${data.length>=2?chartSVG(data):'<p>No hay suficientes check-ins en este rango.</p>'}<div class="tip" id="tip"></div></div>
+    <button class="link" id="btnTable">${showTable?'Ocultar tabla':'Ver los datos en tabla'}</button>
+    <div id="tblWrap" class="${showTable?'':'hidden'}"></div>
+  </div>`;
+  v.innerHTML=html;
+  v.querySelectorAll('.range-btn').forEach(b=>b.addEventListener('click',()=>{range=+b.dataset.r;render();}));
+  document.getElementById('btnTable').addEventListener('click',()=>{showTable=!showTable;render();});
+  if(showTable)buildTable(document.getElementById('tblWrap'),data);
+  if(data.length>=2)wireChart(data);
+}
+function buildTable(el,data){
+  const t=document.createElement('table');
+  const tr=document.createElement('tr');
+  [['Fecha'],['Días de independencia']].forEach(h=>{const th=document.createElement('th');th.textContent=h[0];tr.appendChild(th);});
+  t.appendChild(tr);
+  data.slice().reverse().forEach(d=>{
+    const r=document.createElement('tr');
+    const c1=document.createElement('td');c1.textContent=fmtDate(d.date,{weekday:'short',day:'numeric',month:'short'});
+    const c2=document.createElement('td');c2.textContent=d.dias;
+    r.appendChild(c1);r.appendChild(c2);t.appendChild(r);
+  });
+  el.innerHTML='';el.appendChild(t);
+}
+/* Gráfica de línea: SVG inline, una serie, sin leyenda (el título la nombra) */
+const CW=360,CH=210,PL=30,PR=38,PT=14,PB=26;
+let pts=[];
+function chartSVG(data){
+  const t0=dateMs(data[0].date),t1=dateMs(data[data.length-1].date);
+  const span=Math.max(t1-t0,1);
+  const x=d=>PL+(dateMs(d.date)-t0)/span*(CW-PL-PR);
+  const y=val=>PT+(1-val/30)*(CH-PT-PB);
+  pts=data.map(d=>({px:x(d),py:y(d.dias),d}));
+  const line=pts.map((p,i)=>(i?'L':'M')+p.px.toFixed(1)+' '+p.py.toFixed(1)).join(' ');
+  const area=line+` L${pts[pts.length-1].px.toFixed(1)} ${y(0)} L${pts[0].px.toFixed(1)} ${y(0)} Z`;
+  const last=pts[pts.length-1];
+  let grid='',ticks='';
+  [0,10,20,30].forEach(g=>{
+    grid+=`<line x1="${PL}" y1="${y(g)}" x2="${CW-PR}" y2="${y(g)}" stroke="#E5E7EB" stroke-width="1"/>`;
+    ticks+=`<text x="${PL-7}" y="${y(g)+3.5}" text-anchor="end" font-size="10" fill="#6B7280">${g}</text>`;
+  });
+  const xl=`<text x="${pts[0].px}" y="${CH-8}" text-anchor="start" font-size="10" fill="#6B7280">${fmtDate(data[0].date)}</text>
+  <text x="${last.px}" y="${CH-8}" text-anchor="end" font-size="10" fill="#6B7280">${fmtDate(data[data.length-1].date)}</text>`;
+  return `<svg viewBox="0 0 ${CW} ${CH}" id="chart" role="img" aria-label="Tendencia de días de independencia">
+    ${grid}${ticks}${xl}
+    <path d="${area}" fill="#0090B0" opacity="0.1"/>
+    <path d="${line}" fill="none" stroke="#0090B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line id="xh" x1="0" y1="${PT}" x2="0" y2="${CH-PB}" stroke="#9CA3AF" stroke-width="1" style="display:none"/>
+    <circle id="hdot" r="4.5" fill="#0090B0" stroke="#fff" stroke-width="2" style="display:none"/>
+    <circle cx="${last.px}" cy="${last.py}" r="4.5" fill="#0090B0" stroke="#fff" stroke-width="2"/>
+    <text x="${Math.min(last.px+9,CW-4)}" y="${last.py+4}" font-size="12" font-weight="700" fill="#111827">${last.d.dias}</text>
+  </svg>`;
+}
+function dateMs(k){const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d).getTime();}
+function wireChart(){
+  const svg=document.getElementById('chart'),wrap=document.getElementById('chartWrap'),tip=document.getElementById('tip');
+  const xh=document.getElementById('xh'),hdot=document.getElementById('hdot');
+  function move(ev){
+    const r=svg.getBoundingClientRect();
+    const mx=(ev.clientX-r.left)/r.width*CW;
+    let best=pts[0];for(const p of pts)if(Math.abs(p.px-mx)<Math.abs(best.px-mx))best=p;
+    xh.setAttribute('x1',best.px);xh.setAttribute('x2',best.px);xh.style.display='block';
+    hdot.setAttribute('cx',best.px);hdot.setAttribute('cy',best.py);hdot.style.display='block';
+    tip.innerHTML='';
+    const b=document.createElement('b');b.textContent=best.d.dias+(best.d.dias===1?' día':' días');
+    const dd=document.createElement('div');dd.className='tip-d';dd.textContent=fmtDate(best.d.date,{weekday:'short',day:'numeric',month:'short'});
+    tip.appendChild(b);tip.appendChild(dd);
+    tip.style.left=(best.px/CW*r.width)+'px';
+    tip.style.top=(best.py/CH*r.height)+'px';
+    tip.style.display='block';
+  }
+  function out(){tip.style.display='none';xh.style.display='none';hdot.style.display='none';}
+  wrap.addEventListener('pointermove',move);
+  wrap.addEventListener('pointerdown',move);
+  wrap.addEventListener('pointerleave',out);
+}
+
+/* ============ VISTA: ÁREAS ============ */
+function renderAreas(v){
+  if(!S.pro){v.innerHTML=paywallHTML();wirePaywall();return;}
+  const all=sorted();
+  if(!all.length){v.innerHTML='<div class="card"><h2>Áreas PROFIT</h2><p>Haz tu primer check-in y aquí verás qué área depende más de ti.</p></div>';return;}
+  const cut=new Date();cut.setDate(cut.getDate()-6);
+  let data=all.filter(x=>x.date>=todayKey(cut));
+  if(!data.length)data=all.slice(-7);
+  const avgs=AREAS.map((_,i)=>data.reduce((a,d)=>a+d.scores[i],0)/data.length);
+  const eData=data.filter(d=>typeof d.energia==='number');
+  const eAvg=eData.length?eData.reduce((a,d)=>a+d.energia,0)/eData.length:null;
+  const weak=avgs.indexOf(Math.min(...avgs));
+  let html='';
+  if(alertaActiva())html+=alertaHTML();
+  html+=`<div class="card">
+    <h2>Qué tanto opera cada área sin ti</h2>
+    <div class="sec-note">Promedio de tus últimos ${data.length===1?'check-ins (llevas uno)':data.length+' check-ins'}. Escala de 0 (todo pasa por ti) a 4 (opera sola).</div>
+    ${AREAS.map((nm,i)=>`<div class="area-row">
+      <div class="area-top"><span class="area-nm">${nm}${i===weak?'<span class="area-weak">Área más frágil</span>':''}</span><span class="area-val">${avgs[i].toFixed(1)}</span></div>
+      <div class="meter"><div class="meter-fill" style="width:${avgs[i]/4*100}%"></div></div>
+    </div>`).join('')}
+  </div>`;
+  if(eAvg!==null)html+=`<div class="card">
+    <h2>Tu energía</h2>
+    <div class="sec-note">Cómo has terminado el día, en el mismo periodo. De 0 (fundido) a 4 (con pila de sobra).</div>
+    <div class="area-row">
+      <div class="area-top"><span class="area-nm">Al cierre del día</span><span class="area-val">${eAvg.toFixed(1)}</span></div>
+      <div class="meter gray"><div class="meter-fill" style="width:${eAvg/4*100}%"></div></div>
+    </div>
+  </div>`;
+  html+=`<div class="card"><h2>Para tu siguiente sesión</h2><p>El área más frágil es por donde el negocio te jala de regreso. ¿Qué tarea concreta de "${AREAS[weak]}" podrías delegar esta semana?</p></div>`;
+  v.innerHTML=html;
+}
+
+/* ============ VISTA: AJUSTES ============ */
+function renderAjustes(v){
+  v.innerHTML=`<div class="card">
+    <div class="set-row">
+      <div><div class="set-t">Versión completa (demo)</div><div class="set-d">Activa histórico, desglose por área y alertas para probarlos. En el producto final esto será de paga.</div></div>
+      <label class="toggle"><input type="checkbox" id="tgPro" ${S.pro?'checked':''}><span class="tg-track"><span class="tg-dot"></span></span></label>
+    </div>
+    <div class="set-row">
+      <div><div class="set-t">Cargar datos de ejemplo</div><div class="set-d">Tres semanas de check-ins ficticios para ver las gráficas en acción.</div></div>
+      <button class="btn btn-se" style="width:auto;padding:8px 14px;font-size:12px" id="btnDemo">Cargar</button>
+    </div>
+    <div class="set-row">
+      <div><div class="set-t">Borrar todos los datos</div><div class="set-d">Elimina tus check-ins de este dispositivo. No hay vuelta atrás.</div></div>
+      <button class="btn btn-danger" style="width:auto;padding:8px 14px;font-size:12px" id="btnWipe">Borrar</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Instalar en tu celular</h2>
+    <p>Abre el menú de tu navegador y elige "Agregar a pantalla de inicio". Queda como una app más, sin pasar por ninguna tienda.</p>
+  </div>
+  <div class="card">
+    <p>Termómetro del Fundador es parte del método de El Fundador Libre. Tus datos viven solo en este dispositivo.</p>
+  </div>`;
+  document.getElementById('tgPro').addEventListener('change',e=>{S.pro=e.target.checked;save();});
+  document.getElementById('btnDemo').addEventListener('click',()=>{seedDemo();cur='hoy';render();});
+  document.getElementById('btnWipe').addEventListener('click',()=>{
+    if(confirm('¿Seguro? Se borran todos tus check-ins de este dispositivo.')){S={checkins:{},pro:S.pro};save();render();}
+  });
+}
+/* Datos de ejemplo: mejora gradual con tropiezos y una caída al final para ver la alerta */
+function seedDemo(){
+  const base=[[1,1,2,0,1,1],[1,2,2,1,1,1],[2,2,2,1,1,2],[1,2,3,1,2,2],[2,2,3,1,2,2],[2,3,3,2,2,2],
+              [2,3,3,2,2,3],[3,3,3,2,2,3],[2,3,3,2,3,3],[3,3,4,2,3,3],[3,3,3,3,3,3],[3,4,4,3,3,3],
+              [3,4,4,3,3,4],[3,3,4,3,4,4],[4,4,4,3,3,4],[3,4,4,3,4,4],[3,3,4,3,3,3],[3,3,3,2,3,3],[2,3,3,2,2,2],[2,2,3,1,2,2]];
+  const en=[1,1,2,1,2,2,2,3,2,3,3,3,3,4,3,3,2,2,1,1];
+  S.checkins={};
+  base.forEach((scores,i)=>{
+    const d=new Date();d.setDate(d.getDate()-(base.length-i));
+    S.checkins[todayKey(d)]={scores,energia:en[i],dias:calcDias(scores),ts:Date.now()};
+  });
+  save();
+}
+
+/* ============ PWA: manifest en runtime (un solo archivo) ============ */
+(function(){
+  const icon='data:image/svg+xml,'+encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#0090B0"/><path d="M296 300V132a40 40 0 0 0-80 0v168a72 72 0 1 0 80 0z" fill="none" stroke="#fff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/><circle cx="256" cy="348" r="30" fill="#fff"/></svg>`);
+  const man={name:'Termómetro del Fundador',short_name:'Termómetro',start_url:'.',scope:'.',display:'standalone',
+    background_color:'#F4F6F9',theme_color:'#0090B0',
+    icons:[{src:icon,sizes:'any',type:'image/svg+xml',purpose:'any'}]};
+  const link=document.createElement('link');link.rel='manifest';
+  link.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/json'}));
+  document.head.appendChild(link);
+  const touch=document.createElement('link');touch.rel='apple-touch-icon';touch.href=icon;
+  document.head.appendChild(touch);
+})();
+
+/* ============ INICIO ============ */
+const _fd=new Intl.DateTimeFormat('es-MX',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+document.getElementById('hDate').textContent=_fd.charAt(0).toUpperCase()+_fd.slice(1);
+render();
+</script>
+</body>
+</html>
