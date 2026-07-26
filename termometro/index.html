@@ -131,7 +131,7 @@ function sorted(){return Object.keys(S.checkins).sort().map(k=>({date:k,...S.che
 function fmtDate(k,opts){const [y,m,d]=k.split('-').map(Number);return new Intl.DateTimeFormat('es-MX',opts||{day:'numeric',month:'short'}).format(new Date(y,m-1,d));}
 
 /* ============ PREGUNTAS ============ */
-const AREAS=['Utilidad y flujo','Ventas y marketing','Operación','Números e indicadores','Liderazgo y decisiones','Equipo'];
+const AREAS=['Utilidad y flujo','Ventas y marketing','Operación','Reportes e indicadores','Liderazgo y decisiones','Equipo'];
 /* Cada pregunta trae sus propias respuestas, de 0 (todo dependió de mí) a 4 (operó sin mí) */
 const QS=[
  {area:'P · Utilidad y flujo',t:'El dinero de hoy',d:'Cobros, pagos, gastos. ¿Qué tan encima tuviste que estar?',
@@ -140,8 +140,8 @@ const QS=[
   opts:['Vender me absorbió el día','Sin mí no se cierra nada','Empujé, pero el equipo también','Solo entré a rematar un cierre','Ni me enteré, y vendimos bien']},
  {area:'O · Operación',t:'La operación de hoy',d:'¿Cómo corrió el día allá adentro?',
   opts:['Problemas continuos, como siempre','Apagué varios fuegos yo mismo','Me necesitaron un par de veces','Casi todo fluyó sin mí','Todo fluyó, ni me buscaron']},
- {area:'F · Números e indicadores',t:'Los números de hoy',d:'¿Tuviste la información para decidir?',
-  opts:['Los números solo están en mi cabeza','Tuve que perseguir la información','Algo me llegó, algo perseguí','Me llegaron casi completos','Llegaron solos y claros']},
+ {area:'F · Reportes e indicadores',t:'Los reportes de hoy',d:'¿Cómo te llegó la información del negocio?',
+  opts:['No llega; tengo que pedirla e insistir','Llega tarde y a destiempo','Llega un cúmulo, difícil de analizar','Me llega a diario, aunque tarde','Me llega justo la relevante: cómo vamos y qué cambiar']},
  {area:'I · Liderazgo y decisiones',t:'Las decisiones de hoy',d:'¿Dónde se decidieron las cosas?',
   opts:['Todo se decidió en mi escritorio','Me consultaron hasta lo chico','Decidimos a medias, ellos y yo','Decidieron y me informaron','Decidieron bien sin preguntarme']},
  {area:'T · Equipo',t:'Tu equipo hoy',d:'¿Qué tanto los tuviste que llevar de la mano?',
