@@ -132,17 +132,23 @@ function fmtDate(k,opts){const [y,m,d]=k.split('-').map(Number);return new Intl.
 
 /* ============ PREGUNTAS ============ */
 const AREAS=['Utilidad y flujo','Ventas y marketing','Operación','Números e indicadores','Liderazgo y decisiones','Equipo'];
+/* Cada pregunta trae sus propias respuestas, de 0 (todo dependió de mí) a 4 (operó sin mí) */
 const QS=[
- {area:'P · Utilidad y flujo',t:'El dinero de hoy',d:'Cobros, pagos y decisiones de gasto. ¿Qué tanto dependieron de ti?'},
- {area:'R · Ventas y marketing',t:'Las ventas de hoy',d:'Prospectos, seguimiento y cierres. ¿Qué tanto dependieron de ti?'},
- {area:'O · Operación',t:'La operación de hoy',d:'Que el producto o servicio saliera bien y a tiempo. ¿Qué tanto dependió de ti?'},
- {area:'F · Números e indicadores',t:'Los números de hoy',d:'La información para decidir: reportes, indicadores, cuentas por cobrar. ¿Qué tanto dependió de ti armarla o perseguirla?'},
- {area:'I · Liderazgo y decisiones',t:'Las decisiones de hoy',d:'Lo que se decidió en el negocio. ¿Qué tanto pasó por tu escritorio?'},
- {area:'T · Equipo',t:'Tu equipo hoy',d:'Que cada quien supiera qué hacer y lo hiciera. ¿Qué tanto tuviste que dirigir tú?'},
- {area:'Tu energía',t:'Para cerrar: tú',d:'¿Cómo terminas el día?',energia:true}
+ {area:'P · Utilidad y flujo',t:'El dinero de hoy',d:'Cobros, pagos, gastos. ¿Qué tan encima tuviste que estar?',
+  opts:['Cada peso pasó por mi mano','Tuve que autorizar casi todo','Solo lo importante llegó a mí','Me consultaron una que otra cosa','El dinero se movió sin mí']},
+ {area:'R · Ventas y marketing',t:'Las ventas de hoy',d:'¿Cómo se vendió hoy?',
+  opts:['Vender me absorbió el día','Sin mí no se cierra nada','Empujé, pero el equipo también','Solo entré a rematar un cierre','Ni me enteré, y vendimos bien']},
+ {area:'O · Operación',t:'La operación de hoy',d:'¿Cómo corrió el día allá adentro?',
+  opts:['Problemas continuos, como siempre','Apagué varios fuegos yo mismo','Me necesitaron un par de veces','Casi todo fluyó sin mí','Todo fluyó, ni me buscaron']},
+ {area:'F · Números e indicadores',t:'Los números de hoy',d:'¿Tuviste la información para decidir?',
+  opts:['Los números solo están en mi cabeza','Tuve que perseguir la información','Algo me llegó, algo perseguí','Me llegaron casi completos','Llegaron solos y claros']},
+ {area:'I · Liderazgo y decisiones',t:'Las decisiones de hoy',d:'¿Dónde se decidieron las cosas?',
+  opts:['Todo se decidió en mi escritorio','Me consultaron hasta lo chico','Decidimos a medias, ellos y yo','Decidieron y me informaron','Decidieron bien sin preguntarme']},
+ {area:'T · Equipo',t:'Tu equipo hoy',d:'¿Qué tanto los tuviste que llevar de la mano?',
+  opts:['Los llevé de la mano todo el día','Sin mi lista, se detienen','Saben qué hacer, pero me buscan seguido','Cada quien jaló, con dudas mínimas','El equipo jaló solo todo el día']},
+ {area:'Tu energía',t:'Para cerrar: tú',d:'¿Cómo terminas el día?',energia:true,
+  opts:['Fundido, no me queda nada','Cansado más de lo normal','Normal, ni bien ni mal','Bien, con cuerda todavía','Con pila de sobra']}
 ];
-const OPTS=['Todo pasó por mí','Casi todo pasó por mí','Mitad y mitad','Casi todo salió sin mí','Salió solo, sin mí'];
-const OPTS_E=['Fundido','Cansado','Normal','Bien','Con pila de sobra'];
 
 /* score: 6 respuestas 0-4. El área más débil pesa, porque por ahí se cae el negocio. */
 function calcDias(scores){
@@ -227,7 +233,7 @@ function alertaHTML(){
 function startFlow(){flow={idx:0,answers:[]};render();}
 function renderPregunta(v){
   const q=QS[flow.idx];
-  const opts=q.energia?OPTS_E:OPTS;
+  const opts=q.opts;
   const prev=flow.answers[flow.idx];
   v.innerHTML=`<div class="card">
     <div class="prog-track"><div class="prog-fill" style="width:${(flow.idx)/QS.length*100}%"></div></div>
