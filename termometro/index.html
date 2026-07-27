@@ -28,6 +28,7 @@ header{padding:18px 2px 14px}
 .btn-se{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
 .btn-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
 .link{background:none;border:none;color:var(--teal-dk);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 0}
+a.link{display:inline-block;text-decoration:none}
 /* CHECK-IN */
 .prog-track{height:4px;background:var(--bd);border-radius:2px;margin-bottom:14px;overflow:hidden}
 .prog-fill{height:100%;background:var(--teal-dk);border-radius:2px;transition:width .2s}
@@ -113,9 +114,9 @@ nav{position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px s
 <script>
 'use strict';
 /* ============ CONTACTO (Rolando) ============
-   wa: número de WhatsApp con lada de país, solo dígitos, p. ej. '5286612345678'.
-   Si va vacío, el botón abre WhatsApp y el usuario elige a quién mandarlo. */
-const CONTACTO={wa:''};
+   wa: número de WhatsApp con lada de país, solo dígitos.
+   agenda: liga para agendar llamada directo. */
+const CONTACTO={wa:'528661123135',agenda:'https://calendly.com/rolando-villarreal/30min'};
 /* ============ DATOS ============ */
 const KEY='termometro_v1';
 let S=load();
@@ -200,6 +201,9 @@ function openWA(){
   window.open(base+encodeURIComponent(msg),'_blank');
 }
 document.addEventListener('click',e=>{if(e.target.closest('.btnWA'))openWA();});
+function agendaHTML(){
+  return CONTACTO.agenda?`<a class="link" href="${CONTACTO.agenda}" target="_blank" rel="noopener">O elige fecha y hora en su calendario</a>`:'';
+}
 
 /* ============ VISTA: HOY ============ */
 let editPerfil=false;
@@ -229,7 +233,7 @@ function renderHoy(v){
       <div class="hero-q">${q}</div>
       <div style="height:16px"></div>
       ${hoy.dias<=12
-        ?'<button class="btn btn-pr btnWA">Platicar esto con Rolando</button><div style="height:6px"></div><button class="link" id="btnRedo">Repetir el check-in de hoy</button>'
+        ?'<button class="btn btn-pr btnWA">Platicar esto con Rolando</button><div style="height:4px"></div>'+agendaHTML()+'<br><button class="link" id="btnRedo">Repetir el check-in de hoy</button>'
         :'<button class="link btnWA">Agendar una llamada con Rolando</button><br><button class="link" id="btnRedo">Repetir el check-in de hoy</button>'}
     </div>`;
   }
@@ -421,7 +425,8 @@ function renderAreas(v){
   </div>`;
   html+=`<div class="card"><h2>El siguiente paso</h2><p>El área más frágil es por donde el negocio te jala de regreso. ¿Qué tarea concreta de "${AREAS[weak]}" podrías delegar esta semana?</p>
   <div style="height:14px"></div>
-  <button class="btn btn-pr btnWA">Platicarlo con Rolando</button></div>`;
+  <button class="btn btn-pr btnWA">Platicarlo con Rolando</button>
+  <div style="height:4px;text-align:center"></div><div style="text-align:center">${agendaHTML()}</div></div>`;
   v.innerHTML=html;
 }
 
