@@ -312,6 +312,7 @@ const SYNC_CONFIG={
 
 // ── STATE ──
 let db,V='panel',sid=null,ctab='info',sact=null,sq='',sf='',srt='nombre',srd=1;
+let sNota='',sFecha=''; // texto y fecha del formulario de seguimiento, para no perderlos al cambiar de tipo
 let syncStatus='inicial',syncTimer=null,pendingPush=false;
 
 function deviceName(){
@@ -590,7 +591,7 @@ function rBaja(){
 function reactivar(id){const c=db.contacts.find(x=>x.id===id);if(c){c.activo=true;c.etapa='Prospecto';saveDB();rBaja();showToast('Contacto reactivado como Prospecto');}}
 
 // ── CONTACT MODAL ──
-function openC(id){sid=id;ctab='info';sact=null;renderCM();document.getElementById('modal-c').classList.add('open');}
+function openC(id){sid=id;ctab='info';sact=null;sNota='';sFecha='';renderCM();document.getElementById('modal-c').classList.add('open');}
 function closeC(){document.getElementById('modal-c').classList.remove('open');sid=null;}
 function renderCM(){
   const c=db.contacts.find(x=>x.id===sid);if(!c)return;
@@ -671,9 +672,9 @@ function renderCB(c){
   } else if(ctab==='seguimiento'){
     b.innerHTML=`
       <div class="ab">${Object.keys(TI).map(t=>`<button class="abt${sact===t?' sel':''}" onclick="setSA('${t}')">${TI[t]} ${t}</button>`).join('')}</div>
-      <textarea class="nta" id="act-n" placeholder="Escribe una nota de esta actividad…" rows="3"></textarea>
+      <textarea class="nta" id="act-n" placeholder="Escribe una nota de esta actividad…" rows="3" oninput="sNota=this.value">${e(sNota)}</textarea>
       <div style="display:flex;gap:10px;margin-top:11px;align-items:flex-end">
-        <div class="ef" style="flex:1"><label>Agendar próximo seguimiento</label><input type="date" id="act-fd" style="margin-top:4px"></div>
+        <div class="ef" style="flex:1"><label>Agendar próximo seguimiento</label><input type="date" id="act-fd" style="margin-top:4px" value="${e(sFecha)}" onchange="sFecha=this.value"></div>
         <button class="btn btn-pr" onclick="gAct()">Guardar</button>
       </div>
       <div style="border-top:1px solid var(--bd);margin-top:18px;padding-top:14px">
@@ -698,7 +699,11 @@ function rHist(cid,lim){
   return acts.map(a=>`<div class="hi"><div class="ht"><span class="hti" style="color:${TC[a.tipo]||'#9CA3AF'}">${TI[a.tipo]||'●'} ${e(a.tipo)}</span><span class="hfe">${fd(a.fecha)}</span></div>${a.notas?`<div class="hno">${e(a.notas)}</div>`:''}${a.proximoPaso?`<div class="hnp">→ ${e(a.proximoPaso)}</div>`:''}</div>`).join('');
 }
 
-function setSA(t){sact=t;renderCM();}
+function setSA(t){
+  const n=document.getElementById('act-n');if(n)sNota=n.value;
+  const f=document.getElementById('act-fd');if(f)sFecha=f.value;
+  sact=t;renderCM();
+}
 function setEt(id,et){
   const c=db.contacts.find(x=>x.id===id);
   if(c){
@@ -764,7 +769,7 @@ function gAct(){
   const c=db.contacts.find(x=>x.id===sid);
   db.actividades.push({id:'a'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',tipo:sact,fecha:new Date().toISOString().split('T')[0],notas:nota,proximoPaso:'',fechaSeg:fds});
   if(fds)db.seguimientos.push({id:'s'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',empresa:c?c.empresa||'':'',fecha:fds,motivo:nota||sact,completado:false});
-  saveDB();sact=null;showToast('Actividad guardada ✓');stab('historial');
+  saveDB();sact=null;sNota='';sFecha='';showToast('Actividad guardada ✓');stab('historial');
 }
 
 // ── NUEVO CONTACTO ──
