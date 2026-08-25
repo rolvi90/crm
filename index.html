@@ -71,6 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .badge-contactado{background:#EDE9FE;color:#7C3AED}
 .badge-reunionagendada,.badge-reunion{background:#DBEAFE;color:#1D4ED8}
 .badge-prospecto{background:#F3F4F6;color:#374151}
+.badge-porcontactar{background:#FFEDD5;color:#C2410C}
 .badge-perdido{background:#FEE2E2;color:#DC2626}
 /* PRODUCT CHIPS */
 .prod-grid{display:flex;flex-wrap:wrap;gap:8px}
@@ -192,6 +193,7 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
     <div class="ni active" data-view="panel" onclick="nav('panel')"><span class="ni-ic">📊</span> Panel</div>
     <div class="ni" data-view="pipeline" onclick="nav('pipeline')"><span class="ni-ic">⚡</span> Pipeline</div>
     <div class="ni" data-view="contactos" onclick="nav('contactos')"><span class="ni-ic">👥</span> Contactos</div>
+    <div class="ni" data-view="clientes" onclick="nav('clientes')"><span class="ni-ic">⭐</span> Clientes</div>
     <div class="ni" data-view="seguimientos" onclick="nav('seguimientos')"><span class="ni-ic">📅</span> Seguimientos</div>
     <div class="ni" data-view="baja" onclick="nav('baja')" style="margin-top:16px;border-top:1px solid var(--bd);padding-top:10px"><span class="ni-ic">🚫</span> Dados de baja</div>
   </div>
@@ -214,6 +216,7 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
   <div class="view active" id="view-panel"></div>
   <div class="view" id="view-pipeline"></div>
   <div class="view" id="view-contactos"></div>
+  <div class="view" id="view-clientes"></div>
   <div class="view" id="view-seguimientos"></div>
   <div class="view" id="view-baja"></div>
 </main>
@@ -249,11 +252,12 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
         <div class="ff"><label>Fecha de nacimiento</label><input type="date" name="fechaNacimiento"></div>
         <div class="fsc">C — Comercial</div>
         <div class="ff"><label>Etapa</label>
-          <select name="etapa"><option>Prospecto</option><option>Contactado</option><option>Reunión Agendada</option><option>Propuesta Enviada</option><option>Cliente</option></select>
+          <select name="etapa"><option>Prospecto</option><option>Por Contactar</option><option>Contactado</option><option>Reunión Agendada</option><option>Propuesta Enviada</option><option>Cliente</option></select>
         </div>
         <div class="ff"><label>Temperatura</label>
           <select name="temperatura"><option>Cold</option><option>Warm</option><option>Hot</option></select>
         </div>
+        <div class="ff full"><label>Plan de contacto (qué le vas a decir o proponer)</label><textarea name="planContacto" rows="2" placeholder="Ej. Mencionar el evento de Coparmex, ofrecer una sesión diagnóstica..."></textarea></div>
         <div class="ff"><label>Valor mensual (MXN)</label><input type="number" name="valor" placeholder="0" min="0"></div>
         <div class="ff"><label>Proyecto / Programa</label><input name="proyecto" placeholder="Ej. Liderazgo Ejecutivo"></div>
         <div class="ff"><label>Fuente del lead</label>
@@ -288,7 +292,7 @@ const SK='profit_crm_v3';
 const PRODUCTOS=['Coaching','Asesoría','Programa','Curso','Aplicación'];
 const PI={Coaching:'🎯',Asesoría:'💡',Programa:'📋',Curso:'📚',Aplicación:'📱'};
 const STAGES=[
-  {id:"Prospecto",color:"#9CA3AF"},{id:"Contactado",color:"#3B82F6"},
+  {id:"Prospecto",color:"#9CA3AF"},{id:"Por Contactar",color:"#FB923C"},{id:"Contactado",color:"#3B82F6"},
   {id:"Reunión Agendada",color:"#8B5CF6"},{id:"Propuesta Enviada",color:"#F59E0B"},
   {id:"Cliente",color:"#10B981"},{id:"Perdido",color:"#EF4444"}
 ];
@@ -313,6 +317,7 @@ const SYNC_CONFIG={
 // ── STATE ──
 let db,V='panel',sid=null,ctab='info',sact=null,sq='',sf='',srt='nombre',srd=1;
 let sNota='',sFecha=''; // texto y fecha del formulario de seguimiento, para no perderlos al cambiar de tipo
+let msgTxt=null; // mensaje de WhatsApp sugerido, actual, para el contacto abierto
 let syncStatus='inicial',syncTimer=null,pendingPush=false;
 
 function deviceName(){
@@ -325,7 +330,7 @@ function deviceName(){
 }
 
 function loadLocal(){
-  try{const s=localStorage.getItem(SK);if(s){const d=JSON.parse(s);d.contacts=d.contacts.map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[]},c));return d;}}catch(e){}
+  try{const s=localStorage.getItem(SK);if(s){const d=JSON.parse(s);d.contacts=d.contacts.map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[],planContacto:''},c));return d;}}catch(e){}
   return JSON.parse(JSON.stringify(INIT));
 }
 function saveLocal(){localStorage.setItem(SK,JSON.stringify(db));}
@@ -366,7 +371,7 @@ async function loadDB(){
       await pushToCloud();
     }else{
       db=remote;
-      db.contacts=(db.contacts||[]).map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[],activo:true,fuente:''},c));
+      db.contacts=(db.contacts||[]).map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[],activo:true,fuente:'',planContacto:''},c));
       saveLocal();
     }
     setSyncUI('ok','hace un momento');
@@ -426,11 +431,11 @@ function nav(v){
   V=v;
   document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.view===v));
   document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+v));
-  const T={panel:{t:'Panel',s:'Resumen de tu negocio de coaching'},pipeline:{t:'Pipeline',s:'Visualiza y mueve tus contactos por etapa'},contactos:{t:'Contactos',s:'Tu base de datos completa'},seguimientos:{t:'Seguimientos',s:'Pendientes y compromisos de contacto'},baja:{t:'Contactos de baja',s:'Prospectos inactivos'}};
+  const T={panel:{t:'Panel',s:'Resumen de tu negocio de coaching'},pipeline:{t:'Pipeline',s:'Visualiza y mueve tus contactos por etapa'},contactos:{t:'Contactos',s:'Tu base de datos completa'},clientes:{t:'Clientes',s:'Seguimiento de tu cartera activa'},seguimientos:{t:'Seguimientos',s:'Pendientes y compromisos de contacto'},baja:{t:'Contactos de baja',s:'Prospectos inactivos'}};
   const ti=T[v]||{t:v,s:''};
   document.getElementById('tb-ttl').innerHTML=`<h1>${ti.t}</h1><p>${ti.s}</p>`;
   document.getElementById('tb-btn').innerHTML=(v==='pipeline'||v==='contactos')?`<button class="btn btn-pr" onclick="openN()">+ Nuevo Contacto</button>`:'';
-  if(v==='panel')rPanel();else if(v==='pipeline')rPipe();else if(v==='contactos')rCont();else if(v==='seguimientos')rSegs();else if(v==='baja')rBaja();
+  if(v==='panel')rPanel();else if(v==='pipeline')rPipe();else if(v==='contactos')rCont();else if(v==='clientes')rClientes();else if(v==='seguimientos')rSegs();else if(v==='baja')rBaja();
 }
 
 // ── PANEL ──
@@ -494,7 +499,7 @@ function rPipe(){
   const board=STAGES.map(st=>{
     const cards=act.filter(c=>c.etapa===st.id);
     const sv=cards.reduce((s,c)=>s+(c.valor||0),0);
-    return`<div class="pc"><div class="ch"><div class="chl"><div class="sdot" style="background:${st.color}"></div><span class="cn">${st.id}</span><span class="cc">${cards.length}</span></div>${sv?`<span class="cv">${mxn(sv)}</span>`:''}</div><div>${cards.length===0?'<div class="ce">Sin contactos</div>':cards.map(c=>`<div class="ccard" onclick="openC(${c.id})"><div class="cn2">${e(c.nombre)}</div><div class="cco">${[c.empresa,c.cargo].filter(Boolean).map(x=>e(x)).join(' · ')||'—'}</div><div class="cb">${c.valor?`<span class="cvl">${mxn(c.valor)}/mes</span>`:'<span></span>'}${bT(c.temperatura)}</div>${c.productos&&c.productos.length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${c.productos.map(p=>`<span style="font-size:10px;padding:1px 6px;background:var(--teal-lt);color:var(--teal-dk);border-radius:20px">${PI[p]||''} ${p}</span>`).join('')}</div>`:''}</div>`).join('')}</div></div>`;
+    return`<div class="pc"><div class="ch"><div class="chl"><div class="sdot" style="background:${st.color}"></div><span class="cn">${st.id}</span><span class="cc">${cards.length}</span></div>${sv?`<span class="cv">${mxn(sv)}</span>`:''}</div><div>${cards.length===0?'<div class="ce">Sin contactos</div>':cards.map(c=>`<div class="ccard" onclick="openC(${c.id})"><div class="cn2">${e(c.nombre)}</div><div class="cco">${[c.empresa,c.cargo].filter(Boolean).map(x=>e(x)).join(' · ')||'—'}</div>${c.planContacto?`<div style="font-size:11px;color:var(--mu);font-style:italic;margin-bottom:7px;line-height:1.4">📝 ${e(c.planContacto.slice(0,70))}${c.planContacto.length>70?'…':''}</div>`:''}<div class="cb">${c.valor?`<span class="cvl">${mxn(c.valor)}/mes</span>`:'<span></span>'}${bT(c.temperatura)}</div>${c.productos&&c.productos.length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${c.productos.map(p=>`<span style="font-size:10px;padding:1px 6px;background:var(--teal-lt);color:var(--teal-dk);border-radius:20px">${PI[p]||''} ${p}</span>`).join('')}</div>`:''}</div>`).join('')}</div></div>`;
   }).join('');
   document.getElementById('view-pipeline').innerHTML=`<div class="pt"><span class="pt-l">💼 Pipeline total acumulado</span><span class="pt-v">${mxn(tot)}</span></div><div class="psc"><div class="pb">${board}</div></div>`;
 }
@@ -561,6 +566,45 @@ function rCont(){
     <div style="margin-top:10px;font-size:12px;color:var(--mu)">${list.length} contacto${list.length!==1?'s':''} encontrado${list.length!==1?'s':''}</div>`;
 }
 
+// ── CLIENTES ──
+function diasSinContacto(cid){
+  const acts=db.actividades.filter(a=>a.contactoId===cid);
+  if(!acts.length)return null;
+  const ultima=acts.reduce((mx,a)=>a.fecha>mx?a.fecha:mx,acts[0].fecha);
+  return Math.round((new Date()-new Date(ultima+'T12:00:00'))/86400000);
+}
+function rClientes(){
+  const clientes=db.contacts.filter(c=>c.activo&&c.etapa==='Cliente');
+  const mrr=clientes.reduce((s,c)=>s+(c.valor||0),0);
+  const rows=clientes.map(c=>({c,dias:diasSinContacto(c.id)})).sort((a,b)=>(b.dias===null?9999:b.dias)-(a.dias===null?9999:a.dias));
+  document.getElementById('view-clientes').innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi-card acc"><div class="kpi-lbl">⭐ Clientes activos</div><div class="kpi-val">${clientes.length}</div><div class="kpi-sub">de tu meta: 6</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">💰 MRR total</div><div class="kpi-val">${mxn(mrr)}</div><div class="kpi-sub">por mes</div></div>
+    </div>
+    <div class="sh"><span class="st">Estado de seguimiento</span></div>
+    <div class="cw">
+      ${rows.length===0?'<div class="emp">Aún no tienes clientes activos. Conviértelos desde su ficha o el Pipeline.</div>':rows.map(({c,dias})=>{
+        let lbl,clr;
+        if(dias===null){lbl='Sin actividad registrada';clr='#DC2626';}
+        else if(dias<=14){lbl=`Último contacto hace ${dias}d`;clr='#059669';}
+        else if(dias<=30){lbl=`Sin contacto hace ${dias}d`;clr='#D97706';}
+        else{lbl=`Sin contacto hace ${dias}d — urge`;clr='#DC2626';}
+        return `<div class="ri" onclick="openC(${c.id})">
+          <div class="r-dot" style="background:${clr}"></div>
+          <div style="flex:1">
+            <div class="rn">${e(c.nombre)}</div>
+            <div class="rd">${[c.empresa,c.proyecto].filter(Boolean).map(x=>e(x)).join(' · ')||'—'} · <span style="color:${clr};font-weight:600">${lbl}</span></div>
+          </div>
+          <div style="text-align:right">
+            ${c.valor?`<div style="font-weight:700;color:var(--teal-dk);font-size:13px">${mxn(c.valor)}/mes</div>`:''}
+            ${c.proxContacto?`<div class="rdt">Próx: ${fd(c.proxContacto)}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
 // ── SEGUIMIENTOS ──
 function rSegs(){
   const pend=db.seguimientos.filter(s=>!s.completado).sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -591,7 +635,7 @@ function rBaja(){
 function reactivar(id){const c=db.contacts.find(x=>x.id===id);if(c){c.activo=true;c.etapa='Prospecto';saveDB();rBaja();showToast('Contacto reactivado como Prospecto');}}
 
 // ── CONTACT MODAL ──
-function openC(id){sid=id;ctab='info';sact=null;sNota='';sFecha='';renderCM();document.getElementById('modal-c').classList.add('open');}
+function openC(id){sid=id;ctab='info';sact=null;sNota='';sFecha='';msgTxt=null;renderCM();document.getElementById('modal-c').classList.add('open');}
 function closeC(){document.getElementById('modal-c').classList.remove('open');sid=null;}
 function renderCM(){
   const c=db.contacts.find(x=>x.id===sid);if(!c)return;
@@ -602,7 +646,7 @@ function renderCM(){
   document.getElementById('mc-tabs').innerHTML=['info','seguimiento','historial'].map((t,i)=>`<div class="mta${ctab===t?' active':''}" onclick="stab('${t}')">${['📋 Información','📝 Seguimiento','📖 Historial'][i]}</div>`).join('');
   renderCB(c);
 }
-function stab(t){ctab=t;sact=null;renderCM();}
+function stab(t){ctab=t;sact=null;if(t==='seguimiento')msgTxt=null;renderCM();}
 
 function renderCB(c){
   const b=document.getElementById('mc-body');
@@ -614,6 +658,10 @@ function renderCB(c){
         <div class="sr">${STAGES.map(s=>`<button class="sbtn${c.etapa===s.id?' cur':''}" onclick="setEt(${c.id},'${s.id}')"><span style="width:6px;height:6px;border-radius:50%;background:${s.color};display:inline-block"></span>${s.id}</button>`).join('')}</div>
         <div style="margin-top:10px;font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px">Temperatura</div>
         <div style="display:flex;gap:6px">${['Cold','Warm','Hot'].map(t=>`<button class="sbtn${c.temperatura===t?' cur':''}" onclick="setTe(${c.id},'${t}')">${bT(t)} ${t}</button>`).join('')}</div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-title">Plan de contacto</div>
+        <textarea class="nta" rows="2" placeholder="¿Qué le vas a decir o proponer?" onchange="setF(${c.id},'planContacto',this.value)">${e(c.planContacto||'')}</textarea>
       </div>
       <!-- A: Contacto -->
       <div class="form-sec">
@@ -670,7 +718,17 @@ function renderCB(c){
         `:`<button class="btn btn-gr" onclick="reactivar(${c.id});closeC();showToast('Contacto reactivado')">↩ Reactivar contacto</button>`}
       </div>`;
   } else if(ctab==='seguimiento'){
+    if(msgTxt===null)msgTxt=craftPool(c)[0];
     b.innerHTML=`
+      <div class="qn">
+        <div class="qn-title">💬 Sugerencia de mensaje — ${e(c.etapa)}</div>
+        <div class="nb" id="msg-out">${e(msgTxt)}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-se btn-sm" onclick="regenMsg(${c.id})">🔄 Otra opción</button>
+          <button class="btn btn-se btn-sm" onclick="copyMsg()">📋 Copiar</button>
+          ${c.tel?`<button class="btn btn-pr btn-sm" onclick="sendMsgWA(${c.id})">💬 Abrir WhatsApp</button>`:`<span style="font-size:11px;color:var(--mu);align-self:center">Agrega el teléfono para enviar directo</span>`}
+        </div>
+      </div>
       <div class="ab">${Object.keys(TI).map(t=>`<button class="abt${sact===t?' sel':''}" onclick="setSA('${t}')">${TI[t]} ${t}</button>`).join('')}</div>
       <textarea class="nta" id="act-n" placeholder="Escribe una nota de esta actividad…" rows="3" oninput="sNota=this.value">${e(sNota)}</textarea>
       <div style="display:flex;gap:10px;margin-top:11px;align-items:flex-end">
@@ -697,6 +755,62 @@ function rHist(cid,lim){
   const acts=db.actividades.filter(a=>a.contactoId===cid).sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,lim);
   if(!acts.length)return'<div class="emp">Sin actividades registradas</div>';
   return acts.map(a=>`<div class="hi"><div class="ht"><span class="hti" style="color:${TC[a.tipo]||'#9CA3AF'}">${TI[a.tipo]||'●'} ${e(a.tipo)}</span><span class="hfe">${fd(a.fecha)}</span></div>${a.notas?`<div class="hno">${e(a.notas)}</div>`:''}${a.proximoPaso?`<div class="hnp">→ ${e(a.proximoPaso)}</div>`:''}</div>`).join('');
+}
+
+// ── SUGERENCIA DE MENSAJE ──
+// Nota: esto NO llama a ningún modelo de IA en vivo — una página estática no puede
+// hacerlo de forma segura sin exponer una llave. Son plantillas locales, pero sí
+// usan tu historial real (último "próximo paso" o nota) y el plan de contacto,
+// así que no son genéricas: cambian según lo que de verdad platicaste con cada quien.
+function craftPool(c){
+  const first=(c.nombre||'').split(' ')[0]||'';
+  const proj=c.proyecto?(' de '+c.proyecto):'';
+  const acts=db.actividades.filter(a=>a.contactoId===c.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const last=acts[0];
+  const lastStep=(last&&last.proximoPaso)||'';
+  const lastNota=(last&&last.notas)||'';
+  const pool={
+    'Por Contactar':[c.planContacto?`Hola ${first}, soy Rolando. ${c.planContacto} ¿Tienes unos minutos esta semana para platicar?`:`Hola ${first}, soy Rolando, coach organizacional. Me gustaría conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Un café esta semana?`],
+    'Prospecto':[
+      `Hola ${first}, qué tal. Soy Rolando — ando platicando con dueños de negocio sobre cómo llevan la operación del día a día. ¿Te late un café esta semana?`,
+      `${first}, buen día. Me dio curiosidad conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Tienes 20 minutos esta semana o la que sigue?`
+    ],
+    'Contactado':[
+      lastStep?`${first}, ¿cómo vas? Quedamos en ${lastStep} — ¿cómo ves si lo checamos esta semana?`:`${first}, ¿cómo vas? Quería darle seguimiento a lo que platicamos. ¿Agendamos una llamada corta esta semana?`,
+      `Hola ${first}. No quiero dejar la conversación en el aire — ¿nos vemos 30 minutos esta semana?`
+    ],
+    'Reunión Agendada':[
+      `${first}, te confirmo nuestra reunión${proj}. Cualquier cosa antes, aquí ando.`,
+      `Hola ${first}, todo listo para la reunión. Si quieres que lleve algo en particular, dime.`
+    ],
+    'Propuesta Enviada':[
+      `${first}, ¿cómo vas con la propuesta${proj}? Quedo al pendiente por si tienes dudas o quieres que ajustemos algo.`,
+      `Hola ${first}. Nomás dando seguimiento a la propuesta que te mandé. ¿La pudiste revisar?`
+    ],
+    'Cliente':[
+      `${first}, ¿cómo va todo${proj}? Aquí ando al pendiente de lo que necesites.`,
+      lastNota?`Hola ${first}, seguimos con lo de "${lastNota.slice(0,50)}${lastNota.length>50?'…':''}" — ¿cómo va?`:`Hola ${first}, quería saludarte y ver cómo va${proj||' el trabajo que llevamos'}.`
+    ]
+  };
+  return pool[c.etapa]||pool['Prospecto'];
+}
+function regenMsg(id){
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  const pool=craftPool(c);
+  if(pool.length<=1){msgTxt=pool[0];}
+  else{
+    let n=pool[Math.floor(Math.random()*pool.length)];
+    if(n===msgTxt)n=pool[(pool.indexOf(n)+1)%pool.length];
+    msgTxt=n;
+  }
+  renderCM();
+}
+function copyMsg(){navigator.clipboard?.writeText(msgTxt||'').then(()=>showToast('Copiado ✓'));}
+function sendMsgWA(id){
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  const phone=(c.tel||'').replace(/\D/g,'');
+  if(!phone){showToast('Agrega el teléfono primero');return;}
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgTxt||'')}`);
 }
 
 function setSA(t){
@@ -790,6 +904,7 @@ function guardarNuevo(){
     proyecto:f.proyecto.value.trim(),valor:parseInt(f.valor.value)||0,
     proxContacto:f.proxContacto.value||'',
     notas:f.notas.value.trim(),fuente:f.fuente.value||'',
+    planContacto:f.planContacto.value.trim(),
     productos:prods,activo:true
   });
   saveDB();closeN();showToast('Contacto creado ✓');
