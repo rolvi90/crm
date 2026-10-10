@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P·R·O·F·I·T — CRM Coaching</title>
+<title>P·R·O·F·I·T — CRM v2</title>
 <style>
-:root{--teal:#00B4D8;--teal-dk:#0090B0;--teal-lt:#E0F7FC;--bg:#F4F6F9;--wh:#fff;--bd:#E5E7EB;--tx:#111827;--mu:#6B7280;--sw:220px;--red:#EF4444;--grn:#10B981}
+:root{--teal:#00B4D8;--teal-dk:#0090B0;--teal-lt:#E0F7FC;--bg:#F4F6F9;--wh:#fff;--bd:#E5E7EB;--tx:#111827;--mu:#6B7280;--sw:220px;--red:#EF4444;--grn:#10B981;--amb:#F59E0B;--blu:#3B82F6}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);height:100vh;display:flex;overflow:hidden}
 /* SIDEBAR */
@@ -32,6 +32,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-gr{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}.btn-gr:hover{background:#A7F3D0}
 .btn-re{background:#FEE2E2;color:#DC2626;border:1px solid #FECACA}.btn-re:hover{background:#FECACA}
 .btn-sm{padding:5px 11px;font-size:12px}
+.btn-amb{background:#FEF3C7;color:#92400E;border:1px solid #FCD34D}.btn-amb:hover{background:#FCD34D}
 /* VIEWS */
 .view{display:none;flex:1;overflow-y:auto;padding:24px}
 .view.active{display:block}
@@ -54,6 +55,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sm{min-width:44px;text-align:center;background:var(--teal-lt);border-radius:8px;padding:5px 7px}
 .sm .d{font-size:16px;font-weight:700;color:var(--teal-dk);line-height:1}
 .sm .m{font-size:9px;color:var(--teal-dk);text-transform:uppercase}
+/* TYPE TABS */
+.ttabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ttab{padding:7px 15px;border-radius:20px;border:1px solid var(--bd);background:#fff;font-size:12.5px;cursor:pointer;transition:all .15s;font-weight:500;color:var(--mu)}
+.ttab:hover{border-color:var(--teal)}
+.ttab.on{background:var(--teal-lt);border-color:var(--teal);color:var(--teal-dk);font-weight:700}
+.ttab .n{background:#fff;border:1px solid var(--bd);border-radius:20px;padding:0 6px;font-size:10.5px;margin-left:5px;color:var(--tx)}
 /* BIRTHDAY */
 .bday-card{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:1px solid #FCD34D;border-radius:12px;padding:14px 18px;margin-bottom:20px}
 .bday-title{font-size:13px;font-weight:700;color:#92400E;margin-bottom:10px}
@@ -73,16 +80,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .badge-prospecto{background:#F3F4F6;color:#374151}
 .badge-porcontactar{background:#FFEDD5;color:#C2410C}
 .badge-perdido{background:#FEE2E2;color:#DC2626}
+.badge-clienteanterior{background:#E5E7EB;color:#4B5563}
+.badge-relacion{background:#E0F2FE;color:#0369A1}
+.badge-prospecto-t{background:#FEF3C7;color:#B45309}
+.badge-cliente-t{background:#D1FAE5;color:#059669}
+.badge-relacion-t{background:#E0F2FE;color:#0369A1}
 /* PRODUCT CHIPS */
 .prod-grid{display:flex;flex-wrap:wrap;gap:8px}
 .prod-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-size:13px;transition:all .15s;user-select:none}
-.prod-chip input[type=checkbox]{display:none}
 .prod-chip:hover{border-color:var(--teal);background:var(--teal-lt)}
 .prod-chip.checked{background:var(--teal-lt);border-color:var(--teal);color:var(--teal-dk);font-weight:600}
 /* PIPELINE */
-.pt{background:var(--teal-lt);border:1px solid #A5F3FC;border-radius:10px;padding:10px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
+.pt{background:var(--teal-lt);border:1px solid #A5F3FC;border-radius:10px;padding:10px 18px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .pt-l{font-size:12px;color:var(--teal-dk);font-weight:600}
 .pt-v{font-size:22px;font-weight:700;color:var(--teal-dk)}
+.pt-s{font-size:11px;color:var(--teal-dk)}
 .psc{overflow-x:auto;padding-bottom:12px}
 .pb{display:flex;gap:14px;min-width:max-content}
 .pc{width:228px}
@@ -99,6 +111,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cb{display:flex;align-items:center;justify-content:space-between}
 .cvl{font-size:12px;font-weight:600;color:var(--teal-dk)}
 .ce{height:80px;border:2px dashed var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:11px}
+/* DRAG & DROP */
+.ccard[draggable=true]{cursor:grab}
+.ccard.dragging{opacity:.4;transform:scale(.98)}
+.ccard.lift{opacity:.55;transform:scale(1.04);box-shadow:0 12px 30px rgba(0,0,0,.25);position:relative;z-index:50}
+.pc{transition:outline-color .15s}
+.pc.drag-over{outline:2px dashed var(--teal);outline-offset:4px;border-radius:12px}
+.pc.drag-over .ce{border-color:var(--teal);color:var(--teal-dk);background:var(--teal-lt)}
 /* TABLE */
 .sb2{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
 .si{flex:1;min-width:200px;padding:9px 13px;border:1px solid var(--bd);border-radius:8px;font-size:13px;outline:none;background:var(--wh)}
@@ -110,7 +129,11 @@ tbody tr{border-bottom:1px solid var(--bd);cursor:pointer;transition:background 
 tbody tr:hover{background:var(--teal-lt)}tbody tr:last-child{border-bottom:none}
 td{padding:10px 14px;font-size:13px;white-space:nowrap}
 .tdn{font-weight:600}.tdm{color:var(--mu);font-size:12px}
-/* SEGUIMIENTOS */
+/* AGENDA GROUPS */
+.ag-g{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);margin:20px 0 10px}
+.ag-g.first{margin-top:0}
+.overdue .sg-date{background:#FEE2E2}.overdue .sg-d,.overdue .sg-m{color:#DC2626}
+.today .sg-date{background:#D1FAE5}.today .sg-d,.today .sg-m{color:#059669}
 .sl2{display:flex;flex-direction:column;gap:10px}
 .sgi{background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:13px 15px;display:flex;align-items:center;gap:13px;transition:border-color .15s}
 .sgi:hover{border-color:var(--teal)}.sgi.done{opacity:.5}
@@ -118,6 +141,16 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 .sg-d{font-size:20px;font-weight:700;color:var(--teal-dk);line-height:1.1}
 .sg-m{font-size:9px;color:var(--teal-dk);text-transform:uppercase}
 .sg-cn{font-size:14px;font-weight:600}.sg-em{font-size:11px;color:var(--mu)}.sg-mo{font-size:12px;color:var(--mu);margin-top:2px}
+/* MEMORIA */
+.mem-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--bd)}
+.mem-item:last-child{border-bottom:none}
+.mem-f{font-size:10.5px;color:var(--mu);white-space:nowrap;padding-top:2px;min-width:78px}
+.mem-t{font-size:13px;line-height:1.5;flex:1}
+.mem-add{display:flex;gap:8px;margin-top:10px;align-items:center}
+.mem-add input{flex:1;padding:8px 11px;border:1px solid var(--bd);border-radius:8px;font-size:13px;outline:none}
+.mem-add input:focus{border-color:var(--teal)}
+.mem-card{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 16px;margin-bottom:10px}
+.mem-card-t{font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 /* MODAL */
 .mo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
 .mo.open{display:flex}
@@ -126,8 +159,8 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 .mt2{font-size:18px;font-weight:700;padding-right:32px}
 .ms{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
 .mc{position:absolute;top:15px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--mu);line-height:1;padding:0}.mc:hover{color:var(--tx)}
-.mts{display:flex;padding:0 22px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.mta{padding:10px 14px;font-size:13px;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.mts{display:flex;padding:0 22px;border-bottom:1px solid var(--bd);flex-shrink:0;overflow-x:auto}
+.mta{padding:10px 13px;font-size:13px;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
 .mta.active{color:var(--teal-dk);border-bottom-color:var(--teal);font-weight:600}
 .mb{padding:18px 22px;overflow-y:auto;flex:1}
 .mf{padding:11px 22px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
@@ -148,13 +181,14 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 .ab{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
 .abt{padding:6px 13px;border-radius:20px;border:1px solid var(--bd);background:#fff;font-size:12px;cursor:pointer;transition:all .15s}
 .abt:hover,.abt.sel{background:var(--teal-lt);border-color:var(--teal);color:var(--teal-dk)}
-.nta{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;resize:vertical;min-height:76px;outline:none;font-family:inherit}
+.nta{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;resize:vertical;min-height:70px;outline:none;font-family:inherit}
 .nta:focus{border-color:var(--teal)}
 .hi{padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:7px}
 .ht{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
 .hti{font-size:12px;font-weight:600}.hfe{font-size:11px;color:var(--mu)}
-.hno{font-size:13px;color:var(--tx);line-height:1.5}
+.hno{font-size:13px;color:var(--tx);line-height:1.5;white-space:pre-wrap}
 .hnp{margin-top:5px;font-size:12px;color:var(--mu)}
+.hrs{margin-top:5px;font-size:12.5px;color:var(--tx);background:#fff;border-left:3px solid var(--teal);padding:6px 9px;border-radius:0 6px 6px 0;line-height:1.55;white-space:pre-wrap}
 .emp{text-align:center;padding:28px;color:var(--mu);font-size:13px}
 .nb{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:13px;white-space:pre-wrap;line-height:1.65}
 /* ACTION BAR */
@@ -166,17 +200,27 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 .ff input,.ff select,.ff textarea{padding:8px 11px;border:1px solid var(--bd);border-radius:8px;font-size:13px;outline:none;font-family:inherit}
 .ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--teal)}
 .fsc{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mu);grid-column:1/-1;padding-bottom:4px;border-bottom:1px solid var(--bd);margin-top:6px}
-/* PANEL COLS */
+/* SUGGESTION BOX */
+.sug-box{background:linear-gradient(135deg,#EDE9FE,#F5F3FF);border:1px solid #DDD6FE;border-radius:12px;padding:13px 16px;margin-bottom:16px}
+.sug-title{font-size:11px;font-weight:700;color:#5B21B6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.sug-txt{font-size:13.5px;line-height:1.6;color:#1F2937}
 .pcols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
 @media(max-width:900px){.pcols{grid-template-columns:1fr}}
-/* QUICK NOTE (historial tab) */
+/* QUICK NOTE */
 .qn{background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:14px;border:1px solid var(--bd)}
 .qn-title{font-size:12px;font-weight:700;color:var(--mu);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.mic-btn{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px}
+.mic-btn.rec{background:#FEE2E2;border-color:#FCA5A5}
+/* GRANOLA IMPORT */
+.gra-box{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:12px;padding:13px 16px;margin-bottom:16px}
+.gra-title{font-size:11px;font-weight:700;color:#075985;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.gra-hint{font-size:11px;color:#0369A1;margin-bottom:8px;line-height:1.5}
 /* TOAST */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);background:#1F2937;color:#fff;padding:7px 16px;border-radius:8px;font-size:12px;opacity:0;transition:all .25s;z-index:9999;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* BAJA TAG */
 .baja-tag{display:inline-flex;align-items:center;gap:5px;background:#FEE2E2;color:#DC2626;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+.rel-pill{display:inline-flex;align-items:center;gap:4px;background:#E0F2FE;color:#0369A1;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
 </style>
@@ -187,14 +231,15 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 <nav id="sb">
   <div class="sb-brand">
     <div class="sb-logo">P · R · O · F · I · T</div>
-    <div class="sb-sub">CRM Coaching Ejecutivo</div>
+    <div class="sb-sub">CRM v2 — Consultoría · Consejería · Coaching</div>
   </div>
   <div class="sb-nav">
     <div class="ni active" data-view="panel" onclick="nav('panel')"><span class="ni-ic">📊</span> Panel</div>
     <div class="ni" data-view="pipeline" onclick="nav('pipeline')"><span class="ni-ic">⚡</span> Pipeline</div>
     <div class="ni" data-view="contactos" onclick="nav('contactos')"><span class="ni-ic">👥</span> Contactos</div>
+    <div class="ni" data-view="agenda" onclick="nav('agenda')"><span class="ni-ic">📅</span> Agenda</div>
+    <div class="ni" data-view="relaciones" onclick="nav('relaciones')"><span class="ni-ic">🤝</span> Relaciones</div>
     <div class="ni" data-view="clientes" onclick="nav('clientes')"><span class="ni-ic">⭐</span> Clientes</div>
-    <div class="ni" data-view="seguimientos" onclick="nav('seguimientos')"><span class="ni-ic">📅</span> Seguimientos</div>
     <div class="ni" data-view="baja" onclick="nav('baja')" style="margin-top:16px;border-top:1px solid var(--bd);padding-top:10px"><span class="ni-ic">🚫</span> Dados de baja</div>
   </div>
   <div style="padding:8px 16px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px">
@@ -210,14 +255,15 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 <!-- MAIN -->
 <main id="main">
   <div class="topbar">
-    <div id="tb-ttl"><h1>Panel</h1><p>Resumen de tu negocio de coaching</p></div>
+    <div id="tb-ttl"><h1>Panel</h1><p>Resumen de tu negocio</p></div>
     <div id="tb-btn"></div>
   </div>
   <div class="view active" id="view-panel"></div>
   <div class="view" id="view-pipeline"></div>
   <div class="view" id="view-contactos"></div>
+  <div class="view" id="view-agenda"></div>
+  <div class="view" id="view-relaciones"></div>
   <div class="view" id="view-clientes"></div>
-  <div class="view" id="view-seguimientos"></div>
   <div class="view" id="view-baja"></div>
 </main>
 
@@ -237,10 +283,18 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
     <div class="mh">
       <button class="mc" onclick="closeN()">×</button>
       <div class="mt2">Nuevo Contacto</div>
-      <div class="ms">Captura la información del prospecto o cliente</div>
+      <div class="ms">Captura la información del prospecto, cliente o relación</div>
     </div>
     <div class="mb">
       <form id="form-n" class="fg" onsubmit="return false">
+        <div class="fsc">Tipo de contacto</div>
+        <div class="ff full">
+          <div class="prod-grid" id="new-tipo" style="margin-bottom:4px">
+            <label class="prod-chip checked" data-tipo="prospecto" onclick="selTipoN(this)"><span>🟡 Prospecto (potencial)</span></label>
+            <label class="prod-chip" data-tipo="cliente" onclick="selTipoN(this)"><span>🟢 Cliente</span></label>
+            <label class="prod-chip" data-tipo="relacion" onclick="selTipoN(this)"><span>🔵 Relación (networking)</span></label>
+          </div>
+        </div>
         <div class="fsc">A — Datos de Contacto</div>
         <div class="ff full"><label>Nombre completo *</label><input name="nombre" placeholder="Ej. Carlos Ramírez López"></div>
         <div class="ff"><label>Email</label><input type="email" name="email" placeholder="correo@empresa.com"></div>
@@ -250,28 +304,36 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
         <div class="ff"><label>Cargo / Puesto</label><input name="cargo" placeholder="Ej. Director General"></div>
         <div class="fsc">B — Personal</div>
         <div class="ff"><label>Fecha de nacimiento</label><input type="date" name="fechaNacimiento"></div>
+        <div class="ff"><label>¿Cómo te puede ayudar? (rol)</label>
+          <select name="rolRel"><option value="">Sin definir</option>${REL_ROLES.map(r=>`<option>${r}</option>`).join('')}</select>
+        </div>
+        <div class="ff full" id="ff-dedica"><label>¿A qué se dedica?</label><input name="dedica" placeholder="Ej. Es socio de una firma de contadores, le interesa conectar con dueños..."></div>
+        <div class="ff full" id="ff-detalle"><label>Detalles importantes para recordar</label><textarea name="detallePersonal" rows="2" placeholder="Familia, gustos, hobbies, cómo lo conociste..."></textarea></div>
         <div class="fsc">C — Comercial</div>
         <div class="ff"><label>Etapa</label>
-          <select name="etapa"><option>Prospecto</option><option>Por Contactar</option><option>Contactado</option><option>Reunión Agendada</option><option>Propuesta Enviada</option><option>Cliente</option></select>
+          <select name="etapa" id="fn-etapa">
+            <option>Prospecto</option><option>Por Contactar</option><option>Contactado</option>
+            <option>Reunión Agendada</option><option>Propuesta Enviada</option>
+            <option>Cliente</option><option>Cliente Anterior</option>
+          </select>
         </div>
         <div class="ff"><label>Temperatura</label>
           <select name="temperatura"><option>Cold</option><option>Warm</option><option>Hot</option></select>
         </div>
         <div class="ff full"><label>Plan de contacto (qué le vas a decir o proponer)</label><textarea name="planContacto" rows="2" placeholder="Ej. Mencionar el evento de Coparmex, ofrecer una sesión diagnóstica..."></textarea></div>
         <div class="ff"><label>Valor mensual (MXN)</label><input type="number" name="valor" placeholder="0" min="0"></div>
-        <div class="ff"><label>Proyecto / Programa</label><input name="proyecto" placeholder="Ej. Liderazgo Ejecutivo"></div>
+        <div class="ff"><label>Proyecto / Programa</label><input name="proyecto" placeholder="Ej. Consultoría de institucionalización"></div>
         <div class="ff"><label>Fuente del lead</label>
           <select name="fuente"><option value="">Selecciona...</option><option>LinkedIn</option><option>Referido</option><option>WhatsApp</option><option>Instagram</option><option>Cold Call</option><option>Evento</option><option>Otro</option></select>
         </div>
         <div class="ff"><label>Próx. Contacto</label><input type="date" name="proxContacto"></div>
-        <div class="fsc">D — Productos de interés</div>
+        <div class="fsc">D — Servicios de interés</div>
         <div class="ff full">
           <div class="prod-grid" id="new-prods">
-            <label class="prod-chip" onclick="this.classList.toggle('checked')"><input type="checkbox" name="prod" value="Coaching"><span>🎯 Coaching</span></label>
-            <label class="prod-chip" onclick="this.classList.toggle('checked')"><input type="checkbox" name="prod" value="Asesoría"><span>💡 Asesoría</span></label>
-            <label class="prod-chip" onclick="this.classList.toggle('checked')"><input type="checkbox" name="prod" value="Programa"><span>📋 Programa</span></label>
-            <label class="prod-chip" onclick="this.classList.toggle('checked')"><input type="checkbox" name="prod" value="Curso"><span>📚 Curso</span></label>
-            <label class="prod-chip" onclick="this.classList.toggle('checked')"><input type="checkbox" name="prod" value="Aplicación"><span>📱 Aplicación</span></label>
+            <label class="prod-chip" onclick="this.classList.toggle('checked')"><span>📊 Consultoría</span></label>
+            <label class="prod-chip" onclick="this.classList.toggle('checked')"><span>💬 Consejería</span></label>
+            <label class="prod-chip" onclick="this.classList.toggle('checked')"><span>🎯 Coaching</span></label>
+            <label class="prod-chip" onclick="this.classList.toggle('checked')"><span>🎥 Webinar / Curso</span></label>
           </div>
         </div>
         <div class="fsc">E — Notas</div>
@@ -288,76 +350,73 @@ td{padding:10px 14px;font-size:13px;white-space:nowrap}
 <div id="toast"></div>
 
 <script>
-const SK='profit_crm_v3';
-const PRODUCTOS=['Coaching','Asesoría','Programa','Curso','Aplicación'];
-const PI={Coaching:'🎯',Asesoría:'💡',Programa:'📋',Curso:'📚',Aplicación:'📱'};
+const SK='profit_crm_v4';
+const PRODUCTOS=['Consultoría','Consejería','Coaching','Webinar / Curso'];
+const PI={'Consultoría':'📊','Consejería':'💬','Coaching':'🎯','Webinar / Curso':'🎥'};
+const MAPA_PROD_VIEJO={'Asesoría':'Consejería','Programa':'Consultoría','Curso':'Webinar / Curso','Aplicación':'Webinar / Curso'};
+const TIPOS={prospecto:{lbl:'Prospecto',ic:'🟡'},cliente:{lbl:'Cliente',ic:'🟢'},relacion:{lbl:'Relación',ic:'🔵'}};
+const REL_ROLES=['Amigo','Networking','Referente','Alianza','Colaborador','Mentor'];
+const ROL_IC={Amigo:'🫂',Networking:'🕸️',Referente:'📣',Alianza:'🤝',Colaborador:'🛠️',Mentor:'🦉'};
 const STAGES=[
-  {id:"Prospecto",color:"#9CA3AF"},{id:"Por Contactar",color:"#FB923C"},{id:"Contactado",color:"#3B82F6"},
-  {id:"Reunión Agendada",color:"#8B5CF6"},{id:"Propuesta Enviada",color:"#F59E0B"},
-  {id:"Cliente",color:"#10B981"},{id:"Perdido",color:"#EF4444"}
+  {id:"Prospecto",color:"#9CA3AF",prob:.05,open:1},{id:"Por Contactar",color:"#FB923C",prob:.10,open:1},
+  {id:"Contactado",color:"#3B82F6",prob:.25,open:1},{id:"Reunión Agendada",color:"#8B5CF6",prob:.50,open:1},
+  {id:"Propuesta Enviada",color:"#F59E0B",prob:.70,open:1},{id:"Cliente",color:"#10B981"},
+  {id:"Cliente Anterior",color:"#6B7280"},{id:"Relación",color:"#0EA5E9"},{id:"Perdido",color:"#EF4444"}
 ];
+const STAGE_BY_ID=Object.fromEntries(STAGES.map(s=>[s.id,s]));
 const TC={Llamada:"#3B82F6",WhatsApp:"#10B981",Correo:"#8B5CF6",Reunión:"#F59E0B",LinkedIn:"#0077B5",Seguimiento:"#6B7280",Nota:"#9CA3AF"};
 const TI={Llamada:"📞",WhatsApp:"💬",Correo:"✉️",Reunión:"🤝",LinkedIn:"🔗",Seguimiento:"🔄",Nota:"📝"};
 const FUENTES=['LinkedIn','Referido','WhatsApp','Instagram','Cold Call','Evento','Otro'];
 
-// ── INITIAL DATA ──
-// (Vacío a propósito: tus contactos reales ya NO viven aquí en el código.
-// Viven en tu Google Sheet, para que se puedan sincronizar entre dispositivos
-// sin exponer datos de clientes en el código fuente de la página.)
-function mkC(base){return Object.assign({contacto2:'',fechaNacimiento:'',productos:[],activo:true,fuente:''},base);}
-const INIT={contacts:[],actividades:[],seguimientos:[]};
-
-// ── CONFIG DE SINCRONIZACIÓN ──
-// Pega aquí la URL de tu Apps Script publicado y tu clave (mismo TOKEN que en Code.gs).
+// ── CONFIG DE SINCRONIZACIÓN (mismo backend de Google Sheets que v3) ──
 const SYNC_CONFIG={
   API_URL:'https://script.google.com/macros/s/AKfycbyhvav2aPv6xf8Ijy1Qp-stL1hK2VBp5sEib2N-Zo658vr-qdIEEzuH_frpvZg7sd8l/exec',
   TOKEN:'fn5759838697R2202'
 };
 
 // ── STATE ──
-let db,V='panel',sid=null,ctab='info',sact=null,sq='',sf='',srt='nombre',srd=1;
-let sNota='',sFecha=''; // texto y fecha del formulario de seguimiento, para no perderlos al cambiar de tipo
-let msgTxt=null; // mensaje de WhatsApp sugerido, actual, para el contacto abierto
-let syncStatus='inicial',syncTimer=null,pendingPush=false;
+let db,V='panel',sid=null,ctab='info',sact=null,sq='',sf='',stt='',srt='nombre',srd=1;
+let sNota='',sPaso='',sFecha='',sResumen='',srol='';
+let dragId=null,touchDrag=null,touchTimer=null;
+let msgTxt=null,sugTxt=null;
+let syncStatus='inicial',syncTimer=null;
 
 function deviceName(){
   let n=localStorage.getItem('profit_crm_device');
-  if(!n){
-    n=prompt('¿Cómo se llama este dispositivo? (Ej. "Mac Rolando", "Celular", "Asistente")','')||'Dispositivo';
-    localStorage.setItem('profit_crm_device',n);
-  }
+  if(!n){n=prompt('¿Cómo se llama este dispositivo? (Ej. "Mac Rolando", "Celular")','')||'Dispositivo';localStorage.setItem('profit_crm_device',n);}
   return n;
 }
 
+// Migra contactos de v3 a v4: tipo, productos renombrados, campos nuevos
+function migrate(c){
+  c=Object.assign({contacto2:'',fechaNacimiento:'',productos:[],planContacto:'',fuente:'',activo:true,memoria:[],dedica:'',detallePersonal:'',rolRel:'',tipo:'prospecto'},c);
+  c.productos=(c.productos||[]).map(p=>MAPA_PROD_VIEJO[p]||p).filter(p=>PRODUCTOS.includes(p));
+  if(!c.tipo||c.tipo==='prospecto'){
+    if(c.etapa==='Cliente'||c.etapa==='Cliente Anterior')c.tipo='cliente';
+  }
+  if(c.tipo==='relacion'&&(!c.etapa||c.etapa==='Prospecto'))c.etapa='Relación';
+  return c;
+}
 function loadLocal(){
-  try{const s=localStorage.getItem(SK);if(s){const d=JSON.parse(s);d.contacts=d.contacts.map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[],planContacto:''},c));return d;}}catch(e){}
-  return JSON.parse(JSON.stringify(INIT));
+  try{
+    const s=localStorage.getItem(SK)||localStorage.getItem('profit_crm_v3');
+    if(s){const d=JSON.parse(s);d.contacts=(d.contacts||[]).map(migrate);d.actividades=d.actividades||[];d.seguimientos=d.seguimientos||[];return d;}
+  }catch(e){}
+  return {contacts:[],actividades:[],seguimientos:[]};
 }
 function saveLocal(){localStorage.setItem(SK,JSON.stringify(db));}
-
 function syncConfigured(){return SYNC_CONFIG.API_URL&&SYNC_CONFIG.API_URL.indexOf('http')===0;}
 
 function setSyncUI(status,extra){
   syncStatus=status;
-  const el=document.getElementById('sync-pill');
-  if(!el)return;
-  const map={
-    inicial:{t:'⏳ Cargando…',c:'#9CA3AF'},
-    ok:{t:'🟢 Sincronizado',c:'#059669'},
-    guardando:{t:'🟡 Guardando…',c:'#D97706'},
-    error:{t:'🔴 Sin conexión — guardado local',c:'#DC2626'},
-    sinconfig:{t:'⚪ Sincronización no configurada',c:'#6B7280'}
-  };
+  const el=document.getElementById('sync-pill');if(!el)return;
+  const map={inicial:{t:'⏳ Cargando…',c:'#9CA3AF'},ok:{t:'🟢 Sincronizado',c:'#059669'},guardando:{t:'🟡 Guardando…',c:'#D97706'},error:{t:'🔴 Sin conexión — guardado local',c:'#DC2626'},sinconfig:{t:'⚪ Sin sincronización',c:'#6B7280'}};
   const m=map[status]||map.inicial;
-  el.style.color=m.c;
-  el.textContent=m.t+(extra?' · '+extra:'');
+  el.style.color=m.c;el.textContent=m.t+(extra?' · '+extra:'');
 }
 
-// Trae los datos de la nube. Si no hay conexión o no está configurado,
-// se queda con lo que haya en este dispositivo (localStorage) para no perder nada.
 async function loadDB(){
-  db=loadLocal();
-  nav(V); // muestra de inmediato lo que haya en este dispositivo, sin esperar a la red
+  db=loadLocal();nav(V);
   if(!syncConfigured()){setSyncUI('sinconfig');return;}
   setSyncUI('inicial');
   try{
@@ -365,19 +424,13 @@ async function loadDB(){
     const j=await r.json();
     if(!j.ok)throw new Error(j.error||'error de token');
     const remote=JSON.parse(j.db);
+    remote.contacts=(remote.contacts||[]).map(migrate);
+    remote.actividades=remote.actividades||[];remote.seguimientos=remote.seguimientos||[];
     const pend=localStorage.getItem('profit_crm_pending')==='1';
-    if(pend){
-      // Este dispositivo tiene cambios que no habían llegado a la nube: los mandamos primero.
-      await pushToCloud();
-    }else{
-      db=remote;
-      db.contacts=(db.contacts||[]).map(c=>Object.assign({contacto2:'',fechaNacimiento:'',productos:[],activo:true,fuente:'',planContacto:''},c));
-      saveLocal();
-    }
+    if(pend){await pushToCloud();}
+    else{db=remote;saveLocal();}
     setSyncUI('ok','hace un momento');
-  }catch(err){
-    setSyncUI('error','usando copia local');
-  }
+  }catch(err){setSyncUI('error','usando copia local');}
   nav(V);
 }
 
@@ -385,32 +438,21 @@ async function pushToCloud(){
   if(!syncConfigured())return;
   setSyncUI('guardando');
   try{
-    const r=await fetch(SYNC_CONFIG.API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'}, // evita preflight CORS en Apps Script
-      body:JSON.stringify({token:SYNC_CONFIG.TOKEN,client:deviceName(),db})
-    });
+    const r=await fetch(SYNC_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:SYNC_CONFIG.TOKEN,client:deviceName(),db})});
     const j=await r.json();
     if(!j.ok)throw new Error(j.error||'error al guardar');
     localStorage.setItem('profit_crm_pending','0');
     setSyncUI('ok','hace un momento');
-  }catch(err){
-    localStorage.setItem('profit_crm_pending','1');
-    setSyncUI('error','se reintentará solo');
-  }
+  }catch(err){localStorage.setItem('profit_crm_pending','1');setSyncUI('error','se reintentará solo');}
 }
 
 function saveDB(){
-  saveLocal();
-  localStorage.setItem('profit_crm_pending','1');
+  saveLocal();localStorage.setItem('profit_crm_pending','1');
   if(!syncConfigured())return;
-  setSyncUI('guardando');
-  clearTimeout(syncTimer);
-  syncTimer=setTimeout(pushToCloud,900); // agrupa ediciones seguidas en un solo envío
+  setSyncUI('guardando');clearTimeout(syncTimer);
+  syncTimer=setTimeout(pushToCloud,900);
 }
-
 function syncNow(){loadDB();showToast('Sincronizando…');}
-
 window.addEventListener('online',()=>{if(localStorage.getItem('profit_crm_pending')==='1')pushToCloud();});
 
 // ── HELPERS ──
@@ -418,90 +460,109 @@ function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function mxn(v){if(!v)return'—';return'$'+Number(v).toLocaleString('es-MX');}
 function fd(iso){if(!iso)return'—';return new Date(iso+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});}
 function fc(iso){if(!iso)return{d:'—',m:''};const d=new Date(iso+'T12:00:00');return{d:d.getDate(),m:d.toLocaleString('es',{month:'short'}).toUpperCase()};}
+function todayISO(){return new Date().toISOString().split('T')[0];}
 function sk(s){return(s||'').toLowerCase().replace(/\s+/g,'').replace(/[ó]/g,'o').replace(/[á]/g,'a').replace(/[é]/g,'e').replace(/[í]/g,'i').replace(/[ú]/g,'u').replace(/[ñ]/g,'n');}
 function bS(s){return`<span class="badge badge-${sk(s)}">${e(s)}</span>`;}
 function bT(t){return`<span class="badge badge-${(t||'cold').toLowerCase()}">${e(t)}</span>`;}
+function bTipo(t){const m={prospecto:'badge-prospecto-t',cliente:'badge-cliente-t',relacion:'badge-relacion-t'};return`<span class="badge ${m[t]||'badge-prospecto-t'}">${TIPOS[t]?TIPOS[t].ic+' '+TIPOS[t].lbl:'—'}</span>`;}
 function calcEdad(fn){if(!fn)return'—';const h=new Date(),n=new Date(fn+'T12:00:00');let a=h.getFullYear()-n.getFullYear();if(h.getMonth()<n.getMonth()||(h.getMonth()===n.getMonth()&&h.getDate()<n.getDate()))a--;return a+' años';}
 function diasCumple(fn){if(!fn)return null;const h=new Date(),n=new Date(fn+'T12:00:00');let c=new Date(h.getFullYear(),n.getMonth(),n.getDate());if(c<h)c=new Date(h.getFullYear()+1,n.getMonth(),n.getDate());return Math.round((c-h)/(864e5));}
 function showToast(msg='Guardado ✓'){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
 function initials(n){return(n||'?').split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function diasSinContacto(cid){
+  const acts=db.actividades.filter(a=>a.contactoId===cid);
+  if(!acts.length)return null;
+  const ultima=acts.reduce((mx,a)=>a.fecha>mx?a.fecha:mx,acts[0].fecha);
+  return Math.round((new Date()-new Date(ultima+'T12:00:00'))/86400000);
+}
+function isOpen(c){const st=STAGE_BY_ID[c.etapa];return st&&st.open&&c.activo;}
+function pipeProb(c){const st=STAGE_BY_ID[c.etapa];return st&&st.prob?st.prob:0;}
 
 // ── NAVIGATION ──
 function nav(v){
   V=v;
   document.querySelectorAll('.ni').forEach(el=>el.classList.toggle('active',el.dataset.view===v));
   document.querySelectorAll('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+v));
-  const T={panel:{t:'Panel',s:'Resumen de tu negocio de coaching'},pipeline:{t:'Pipeline',s:'Visualiza y mueve tus contactos por etapa'},contactos:{t:'Contactos',s:'Tu base de datos completa'},clientes:{t:'Clientes',s:'Seguimiento de tu cartera activa'},seguimientos:{t:'Seguimientos',s:'Pendientes y compromisos de contacto'},baja:{t:'Contactos de baja',s:'Prospectos inactivos'}};
+  const T={panel:{t:'Panel',s:'Resumen de tu negocio'},pipeline:{t:'Pipeline',s:'Oportunidades y valor estimado'},contactos:{t:'Contactos',s:'Tu base completa: prospectos, clientes y relaciones'},agenda:{t:'Agenda',s:'Contactos agendados y cumpleaños'},relaciones:{t:'Relaciones',s:'Tu red de contactos y su memoria viva'},clientes:{t:'Clientes',s:'Cartera activa y anteriores'},baja:{t:'Contactos de baja',s:'Inactivos (sin borrar)'}};
   const ti=T[v]||{t:v,s:''};
   document.getElementById('tb-ttl').innerHTML=`<h1>${ti.t}</h1><p>${ti.s}</p>`;
-  document.getElementById('tb-btn').innerHTML=(v==='pipeline'||v==='contactos')?`<button class="btn btn-pr" onclick="openN()">+ Nuevo Contacto</button>`:'';
-  if(v==='panel')rPanel();else if(v==='pipeline')rPipe();else if(v==='contactos')rCont();else if(v==='clientes')rClientes();else if(v==='seguimientos')rSegs();else if(v==='baja')rBaja();
+  document.getElementById('tb-btn').innerHTML=(v!=='baja')?`<button class="btn btn-pr" onclick="openN()">+ Nuevo Contacto</button>`:'';
+  if(v==='panel')rPanel();else if(v==='pipeline')rPipe();else if(v==='contactos')rCont();else if(v==='agenda')rAgenda();else if(v==='relaciones')rRels();else if(v==='clientes')rClientes();else if(v==='baja')rBaja();
 }
 
 // ── PANEL ──
 function rPanel(){
   const act=db.contacts.filter(c=>c.activo);
-  const cli=act.filter(c=>c.etapa==='Cliente');
-  const pipe=act.filter(c=>['Contactado','Reunión Agendada','Propuesta Enviada'].includes(c.etapa));
-  const pros=act.filter(c=>c.etapa==='Prospecto');
-  const sp=db.seguimientos.filter(s=>!s.completado);
-  const pv=pipe.reduce((s,c)=>s+(c.valor||0),0);
+  const cli=act.filter(c=>c.tipo==='cliente'&&c.etapa==='Cliente');
+  const cliAnt=act.filter(c=>c.etapa==='Cliente Anterior');
+  const rels=act.filter(c=>c.tipo==='relacion');
+  const open=act.filter(isOpen);
+  const pipeBruto=open.reduce((s,c)=>s+(c.valor||0),0);
+  const pipePond=open.reduce((s,c)=>s+(c.valor||0)*pipeProb(c),0);
   const mrr=cli.reduce((s,c)=>s+(c.valor||0),0);
-  const hot=act.filter(c=>c.temperatura==='Hot'||c.temperatura==='Warm').sort((a,b)=>({Hot:0,Warm:1}[a.temperatura]||2)-({Hot:0,Warm:1}[b.temperatura]||2));
+  const sp=db.seguimientos.filter(s=>!s.completado);
   const ra=[...db.actividades].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5);
-  // Cumpleaños próximos (30 días)
   const bdays=act.filter(c=>c.fechaNacimiento&&diasCumple(c.fechaNacimiento)!==null&&diasCumple(c.fechaNacimiento)<=30).sort((a,b)=>diasCumple(a.fechaNacimiento)-diasCumple(b.fechaNacimiento));
+  // Memoria reciente de relaciones (últimos 45 días) para tenerlos presentes
+  const hoy=new Date();const limite=new Date(hoy-45*864e5);
+  const memRecent=rels.flatMap(c=>(c.memoria||[]).filter(m=>m.fecha>=limite.toISOString().split('T')[0]).map(m=>({c,m}))).sort((a,b)=>b.m.fecha.localeCompare(a.m.fecha)).slice(0,4);
 
   document.getElementById('view-panel').innerHTML=`
     <div class="kpi-grid">
-      <div class="kpi-card acc"><div class="kpi-lbl">💼 Pipeline activo</div><div class="kpi-val">${mxn(pv)}</div><div class="kpi-sub">${pipe.length} oportunidad${pipe.length!==1?'es':''}</div></div>
-      <div class="kpi-card"><div class="kpi-lbl">⭐ Clientes activos</div><div class="kpi-val">${cli.length}</div><div class="kpi-sub">${mxn(mrr)}/mes MRR</div></div>
-      <div class="kpi-card"><div class="kpi-lbl">👤 Prospectos</div><div class="kpi-val">${pros.length}</div><div class="kpi-sub">Sin primer contacto</div></div>
-      <div class="kpi-card"><div class="kpi-lbl">📋 Total contactos</div><div class="kpi-val">${act.length}</div><div class="kpi-sub">${db.contacts.filter(c=>!c.activo).length} de baja</div></div>
-      <div class="kpi-card"><div class="kpi-lbl">📅 Seguimientos</div><div class="kpi-val">${sp.length}</div><div class="kpi-sub">Pendientes</div></div>
+      <div class="kpi-card acc"><div class="kpi-lbl">💼 Pipeline ponderado</div><div class="kpi-val">${mxn(Math.round(pipePond))}</div><div class="kpi-sub">de ${mxn(pipeBruto)} potencial</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">⭐ Clientes activos</div><div class="kpi-val">${cli.length}</div><div class="kpi-sub">${mxn(mrr)}/mes · meta 6-8</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">🟡 Oportunidades</div><div class="kpi-val">${open.length}</div><div class="kpi-sub">en proceso</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">🤝 Relaciones</div><div class="kpi-val">${rels.length}</div><div class="kpi-sub">tu red activa</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">📅 Seguimientos</div><div class="kpi-val">${sp.length}</div><div class="kpi-sub">pendientes</div></div>
     </div>
     ${bdays.length?`<div class="bday-card">
       <div class="bday-title">🎂 Próximos cumpleaños (30 días)</div>
       <div class="bday-list">
         ${bdays.map(c=>{const d=diasCumple(c.fechaNacimiento);return`<div class="bday-item" onclick="openC(${c.id})">
           <div class="bday-avatar">${initials(c.nombre)}</div>
-          <div><div class="bday-nm">${e(c.nombre)}</div><div class="bday-info">${e(c.empresa||'—')} · ${calcEdad(c.fechaNacimiento)}</div></div>
+          <div><div class="bday-nm">${e(c.nombre)}</div><div class="bday-info">${e(c.empresa||TIPOS[c.tipo].lbl)} · ${calcEdad(c.fechaNacimiento)}</div></div>
           <span class="bday-dias">${d===0?'¡HOY!':`En ${d} día${d!==1?'s':''}`}</span>
         </div>`;}).join('')}
       </div>
+    </div>`:''}
+    ${memRecent.length?`<div class="mem-card">
+      <div class="mem-card-t">🧠 Para tu próxima conversación (relaciones)</div>
+      ${memRecent.map(({c,m})=>`<div class="mem-item" style="cursor:pointer" onclick="openC(${c.id})"><div class="mem-f">${fd(m.fecha)}</div><div class="mem-t"><b>${e(c.nombre)}:</b> ${e(m.texto)}</div></div>`).join('')}
     </div>`:''}
     <div class="pcols">
       <div>
         <div class="sh"><span class="st">Actividad reciente</span></div>
         <div class="cw">
-          ${ra.length===0?'<div class="emp">Sin actividades aún</div>':ra.map(a=>{const c=db.contacts.find(x=>x.id===a.contactoId);return`<div class="ri" onclick="openC(${a.contactoId})"><div class="r-dot" style="background:${TC[a.tipo]||'#9CA3AF'}"></div><div style="flex:1"><div class="rn">${TI[a.tipo]||''} ${e(a.tipo)} · ${e(c?c.nombre:a.contacto)}</div><div class="rd">${e((a.notas||'').substring(0,65)+(a.notas&&a.notas.length>65?'…':''))}</div></div><div class="rdt">${fd(a.fecha)}</div></div>`;}).join('')}
+          ${ra.length===0?'<div class="emp">Sin actividades aún</div>':ra.map(a=>{const c=db.contacts.find(x=>x.id===a.contactoId);return`<div class="ri" onclick="openC(${a.contactoId})"><div class="r-dot" style="background:${TC[a.tipo]||'#9CA3AF'}"></div><div style="flex:1"><div class="rn">${TI[a.tipo]||''} ${e(a.tipo)} · ${e(c?c.nombre:a.contacto)}</div><div class="rd">${e((a.notas||a.resumen||'').substring(0,65)+((a.notas||a.resumen||'').length>65?'…':''))}</div></div><div class="rdt">${fd(a.fecha)}</div></div>`;}).join('')}
         </div>
       </div>
       <div>
-        <div class="sh"><span class="st">Seguimientos pendientes</span><span class="sl" onclick="nav('seguimientos')">Ver todos →</span></div>
+        <div class="sh"><span class="st">Seguimientos pendientes</span><span class="sl" onclick="nav('agenda')">Ver agenda →</span></div>
         <div class="cw">
-          ${sp.length===0?'<div class="emp">¡Sin pendientes!</div>':sp.slice(0,5).map(s=>{const f=fc(s.fecha);return`<div class="ri" onclick="openC(${s.contactoId})"><div class="sm"><div class="d">${f.d}</div><div class="m">${f.m}</div></div><div style="flex:1"><div class="rn">${e(s.contacto)}</div><div class="rd">${e(s.motivo)}</div></div></div>`;}).join('')}
+          ${sp.length===0?'<div class="emp">¡Sin pendientes!</div>':sp.sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5).map(s=>{const f=fc(s.fecha);return`<div class="ri" onclick="openC(${s.contactoId})"><div class="sm"><div class="d">${f.d}</div><div class="m">${f.m}</div></div><div style="flex:1"><div class="rn">${e(s.contacto)}</div><div class="rd">${e(s.motivo)}</div></div></div>`;}).join('')}
         </div>
       </div>
-    </div>
-    <div style="margin-top:4px">
-      <div class="sh"><span class="st">Contactos calientes 🔥</span><span class="sl" onclick="nav('pipeline')">Ver pipeline →</span></div>
-      <div class="cw"><table><thead><tr><th>Nombre</th><th>Empresa</th><th>Etapa</th><th>Temp.</th><th>Próx. Contacto</th></tr></thead><tbody>
-        ${hot.slice(0,8).map(c=>`<tr onclick="openC(${c.id})"><td class="tdn">${e(c.nombre)}</td><td class="tdm">${e(c.empresa)||'—'}</td><td>${bS(c.etapa)}</td><td>${bT(c.temperatura)}</td><td class="tdm">${fd(c.proxContacto)}</td></tr>`).join('')}
-      </tbody></table></div>
     </div>`;
 }
 
 // ── PIPELINE ──
 function rPipe(){
-  const act=db.contacts.filter(c=>c.activo);
-  const tot=act.reduce((s,c)=>s+(c.valor||0),0);
-  const board=STAGES.map(st=>{
-    const cards=act.filter(c=>c.etapa===st.id);
+  const open=db.contacts.filter(isOpen);
+  const bruto=open.reduce((s,c)=>s+(c.valor||0),0);
+  const pond=open.reduce((s,c)=>s+(c.valor||0)*pipeProb(c),0);
+  const board=STAGES.filter(s=>s.open).map(st=>{
+    const cards=open.filter(c=>c.etapa===st.id);
     const sv=cards.reduce((s,c)=>s+(c.valor||0),0);
-    return`<div class="pc"><div class="ch"><div class="chl"><div class="sdot" style="background:${st.color}"></div><span class="cn">${st.id}</span><span class="cc">${cards.length}</span></div>${sv?`<span class="cv">${mxn(sv)}</span>`:''}</div><div>${cards.length===0?'<div class="ce">Sin contactos</div>':cards.map(c=>`<div class="ccard" onclick="openC(${c.id})"><div class="cn2">${e(c.nombre)}</div><div class="cco">${[c.empresa,c.cargo].filter(Boolean).map(x=>e(x)).join(' · ')||'—'}</div>${c.planContacto?`<div style="font-size:11px;color:var(--mu);font-style:italic;margin-bottom:7px;line-height:1.4">📝 ${e(c.planContacto.slice(0,70))}${c.planContacto.length>70?'…':''}</div>`:''}<div class="cb">${c.valor?`<span class="cvl">${mxn(c.valor)}/mes</span>`:'<span></span>'}${bT(c.temperatura)}</div>${c.productos&&c.productos.length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${c.productos.map(p=>`<span style="font-size:10px;padding:1px 6px;background:var(--teal-lt);color:var(--teal-dk);border-radius:20px">${PI[p]||''} ${p}</span>`).join('')}</div>`:''}</div>`).join('')}</div></div>`;
+    return`<div class="pc" data-stage="${st.id}" ondragover="dOver(event)" ondragleave="dLeave(event)" ondrop="dDrop(event,'${st.id}')"><div class="ch"><div class="chl"><div class="sdot" style="background:${st.color}"></div><span class="cn">${st.id}</span><span class="cc">${cards.length}</span></div>${sv?`<span class="cv">${mxn(sv)}</span>`:''}</div><div>${cards.length===0?'<div class="ce">Arrastra tarjetas aquí</div>':cards.map(c=>`<div class="ccard" draggable="true" ondragstart="dStart(event,${c.id})" ondragend="dEnd()" ontouchstart="tStart(event,${c.id},this)" ontouchmove="tMove(event,this)" ontouchend="tEnd(event)" onclick="if(!touchDrag&&!window.__dragged)openC(${c.id})"><div class="cn2">${e(c.nombre)}</div><div class="cco">${[c.empresa,c.cargo].filter(Boolean).map(x=>e(x)).join(' · ')||TIPOS[c.tipo].lbl}</div>${c.planContacto?`<div style="font-size:11px;color:var(--mu);font-style:italic;margin-bottom:7px;line-height:1.4">📝 ${e(c.planContacto.slice(0,70))}${c.planContacto.length>70?'…':''}</div>`:''}<div class="cb">${c.valor?`<span class="cvl">${mxn(c.valor)}/mes</span>`:'<span></span>'}${bT(c.temperatura)}</div><div style="margin-top:6px;font-size:10px;color:var(--mu)">Prob. ${Math.round((STAGE_BY_ID[c.etapa].prob||0)*100)}% → ${mxn(Math.round((c.valor||0)*(STAGE_BY_ID[c.etapa].prob||0)))}</div>${c.productos&&c.productos.length?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:3px">${c.productos.map(p=>`<span style="font-size:10px;padding:1px 6px;background:var(--teal-lt);color:var(--teal-dk);border-radius:20px">${PI[p]||''} ${p}</span>`).join('')}</div>`:''}</div>`).join('')}</div></div>`;
   }).join('');
-  document.getElementById('view-pipeline').innerHTML=`<div class="pt"><span class="pt-l">💼 Pipeline total acumulado</span><span class="pt-v">${mxn(tot)}</span></div><div class="psc"><div class="pb">${board}</div></div>`;
+  document.getElementById('view-pipeline').innerHTML=`
+    <div class="pt">
+      <span class="pt-l">💼 Pipeline potencial</span><span class="pt-v">${mxn(bruto)}</span>
+      <span style="color:#A5F3FC">|</span>
+      <span class="pt-l">🎯 Valor ponderado</span><span class="pt-v">${mxn(Math.round(pond))}</span>
+      <span class="pt-s">(probabilidad por etapa: Contactado 25% · Reunión 50% · Propuesta 70%)</span>
+    </div>
+    <div class="psc"><div class="pb">${board}</div></div>`;
 }
 
 // ── CONTACTOS ──
@@ -513,78 +574,198 @@ function thH(label,field){
 }
 function rCont(){
   let list=db.contacts.filter(c=>c.activo);
-  if(sq){const lq=sq.toLowerCase();list=list.filter(c=>(c.nombre||'').toLowerCase().includes(lq)||(c.empresa||'').toLowerCase().includes(lq)||(c.email||'').toLowerCase().includes(lq));}
+  const counts={todos:list.length,prospecto:list.filter(c=>c.tipo==='prospecto').length,cliente:list.filter(c=>c.tipo==='cliente').length,relacion:list.filter(c=>c.tipo==='relacion').length};
+  if(stt)list=list.filter(c=>c.tipo===stt);
+  if(sq){const lq=sq.toLowerCase();list=list.filter(c=>(c.nombre||'').toLowerCase().includes(lq)||(c.empresa||'').toLowerCase().includes(lq)||(c.email||'').toLowerCase().includes(lq)||(c.dedica||'').toLowerCase().includes(lq));}
   if(sf)list=list.filter(c=>c.etapa===sf);
-  // Sort
   const stageOrder=Object.fromEntries(STAGES.map((s,i)=>[s.id,i]));
   const tempOrder={Hot:0,Warm:1,Cold:2};
   list.sort((a,b)=>{
     let av,bv;
     if(srt==='nombre'){av=(a.nombre||'').toLowerCase();bv=(b.nombre||'').toLowerCase();}
     else if(srt==='empresa'){av=(a.empresa||'').toLowerCase();bv=(b.empresa||'').toLowerCase();}
+    else if(srt==='tipo'){av=a.tipo;bv=b.tipo;}
     else if(srt==='etapa'){av=stageOrder[a.etapa]??99;bv=stageOrder[b.etapa]??99;}
     else if(srt==='temperatura'){av=tempOrder[a.temperatura]??9;bv=tempOrder[b.temperatura]??9;}
     else if(srt==='valor'){av=a.valor||0;bv=b.valor||0;}
     else if(srt==='proxContacto'){av=a.proxContacto||'9999';bv=b.proxContacto||'9999';}
     else{av=(a.nombre||'').toLowerCase();bv=(b.nombre||'').toLowerCase();}
     if(typeof av==='number')return(av-bv)*srd;
-    return av.localeCompare(bv,'es')*srd;
+    return String(av).localeCompare(String(bv),'es')*srd;
   });
   document.getElementById('view-contactos').innerHTML=`
+    <div class="ttabs">
+      <div class="ttab${!stt?' on':''}" onclick="stt='';rCont()">Todos <span class="n">${counts.todos}</span></div>
+      <div class="ttab${stt==='prospecto'?' on':''}" onclick="stt='prospecto';rCont()">🟡 Prospectos <span class="n">${counts.prospecto}</span></div>
+      <div class="ttab${stt==='cliente'?' on':''}" onclick="stt='cliente';rCont()">🟢 Clientes <span class="n">${counts.cliente}</span></div>
+      <div class="ttab${stt==='relacion'?' on':''}" onclick="stabTipo('relacion')">🔵 Relaciones <span class="n">${counts.relacion}</span></div>
+    </div>
     <div class="sb2">
-      <input class="si" placeholder="Buscar por nombre, empresa o correo..." value="${e(sq)}" oninput="sq=this.value;rCont()">
+      <input class="si" placeholder="Buscar por nombre, empresa, correo o a qué se dedica..." value="${e(sq)}" oninput="sq=this.value;rCont()">
       <select class="fs" onchange="sf=this.value;rCont()">
         <option value="">Todas las etapas</option>
         ${STAGES.map(s=>`<option value="${s.id}"${sf===s.id?' selected':''}>${s.id}</option>`).join('')}
       </select>
-      <div style="font-size:11px;color:var(--mu);white-space:nowrap;align-self:center">Click en columna para ordenar</div>
     </div>
     <div class="cw">
       <table><thead><tr>
         ${thH('Nombre','nombre')}
+        ${thH('Tipo','tipo')}
         ${thH('Empresa','empresa')}
         <th>Cargo</th>
         ${thH('Etapa','etapa')}
-        ${thH('Temp.','temperatura')}
-        <th>Productos</th>
+        <th>Servicios</th>
         ${thH('Valor/mes','valor')}
         ${thH('Próx. Contacto','proxContacto')}
       </tr></thead><tbody>
         ${list.length===0?`<tr><td colspan="8" class="emp">Sin resultados</td></tr>`:list.map(c=>`
           <tr onclick="openC(${c.id})">
             <td class="tdn">${e(c.nombre)}${c.fechaNacimiento&&diasCumple(c.fechaNacimiento)<=7?` <span title="Cumpleaños pronto">🎂</span>`:''}</td>
+            <td>${bTipo(c.tipo)}</td>
             <td class="tdm">${e(c.empresa)||'—'}</td>
             <td class="tdm">${e(c.cargo)||'—'}</td>
             <td>${bS(c.etapa)}</td>
-            <td>${bT(c.temperatura)}</td>
             <td style="font-size:11px">${c.productos&&c.productos.length?c.productos.map(p=>`${PI[p]||''}${p}`).join(', '):'—'}</td>
             <td style="font-weight:600;color:var(--teal-dk)">${mxn(c.valor)}</td>
             <td class="tdm">${fd(c.proxContacto)}</td>
           </tr>`).join('')}
       </tbody></table>
     </div>
-    <div style="margin-top:10px;font-size:12px;color:var(--mu)">${list.length} contacto${list.length!==1?'s':''} encontrado${list.length!==1?'s':''}</div>`;
+    <div style="margin-top:10px;font-size:12px;color:var(--mu)">${list.length} contacto${list.length!==1?'s':''} · click en columna para ordenar</div>`;
+}
+function stabTipo(t){if(t==='relacion'){stt='';nav('relaciones');}else{stt=t;rCont();}}
+
+// ── AGENDA ──
+function rAgenda(){
+  const hoy=todayISO();
+  const pend=db.seguimientos.filter(s=>!s.completado).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const finSemana=(()=>{const d=new Date();const diff=(7-d.getDay())%7;d.setDate(d.getDate()+diff);return d.toISOString().split('T')[0];})();
+  const overdue=pend.filter(s=>s.fecha<hoy);
+  const today=pend.filter(s=>s.fecha===hoy);
+  const week=pend.filter(s=>s.fecha>hoy&&s.fecha<=finSemana);
+  const later=pend.filter(s=>s.fecha>finSemana);
+  const done=db.seguimientos.filter(s=>s.completado).slice(-8).reverse();
+  const bdays=db.contacts.filter(c=>c.activo&&c.fechaNacimiento&&diasCumple(c.fechaNacimiento)!==null&&diasCumple(c.fechaNacimiento)<=30).sort((a,b)=>diasCumple(a.fechaNacimiento)-diasCumple(b.fechaNacimiento));
+  const si=(s,cls='')=>{const f=fc(s.fecha);const c=db.contacts.find(x=>x.id===s.contactoId);return`<div class="sgi ${cls}"><div class="sg-date"><div class="sg-d">${f.d}</div><div class="sg-m">${f.m}</div></div><div style="flex:1"><div class="sg-cn">${e(s.contacto)}</div>${s.empresa?`<div class="sg-em">${e(s.empresa)}</div>`:''}<div class="sg-mo">${e(s.motivo)}</div></div>${c?`<button class="btn btn-se btn-sm" onclick="openC(${c.id})">Ver →</button>`:''}<button class="btn btn-pr btn-sm" onclick="completar('${s.id}')">✓ Listo</button></div>`;};
+  document.getElementById('view-agenda').innerHTML=`
+    ${bdays.length?`<div class="bday-card">
+      <div class="bday-title">🎂 Cumpleaños próximos (30 días) — momento de fidelizar</div>
+      <div class="bday-list">${bdays.map(c=>{const d=diasCumple(c.fechaNacimiento);return`<div class="bday-item" onclick="openC(${c.id})"><div class="bday-avatar">${initials(c.nombre)}</div><div><div class="bday-nm">${e(c.nombre)}</div><div class="bday-info">${e(c.empresa||TIPOS[c.tipo].lbl)} · ${calcEdad(c.fechaNacimiento)}</div></div><span class="bday-dias">${d===0?'¡HOY!':`En ${d} día${d!==1?'s':''}`}</span></div>`;}).join('')}</div>
+    </div>`:''}
+    ${overdue.length?`<div class="ag-g">⚠️ Vencidos (${overdue.length})</div><div class="sl2">${overdue.map(s=>si(s,'overdue')).join('')}</div>`:''}
+    <div class="ag-g${overdue.length?'':' first'}">📌 Hoy (${today.length})</div>
+    <div class="sl2">${today.length===0?'<div class="emp">Nada agendado para hoy</div>':today.map(s=>si(s,'today')).join('')}</div>
+    <div class="ag-g">📆 Esta semana (${week.length})</div>
+    <div class="sl2">${week.length===0?'<div class="emp">Sin pendientes esta semana</div>':week.map(s=>si(s)).join('')}</div>
+    <div class="ag-g">🗓️ Después (${later.length})</div>
+    <div class="sl2">${later.length===0?'<div class="emp">Nada más agendado</div>':later.map(s=>si(s)).join('')}</div>
+    ${done.length?`<div class="ag-g">✅ Completados recientemente</div><div class="sl2">${done.map(s=>si(s,'done')).join('')}</div>`:''}`;
+}
+function completar(id){const s=db.seguimientos.find(x=>x.id===id);if(s){s.completado=true;saveDB();nav(V);showToast('Seguimiento completado ✓');}}
+
+// ── DRAG & DROP PIPELINE (mouse + táctil) ──
+function dStart(ev,id){dragId=id;ev.dataTransfer.effectAllowed='move';try{ev.dataTransfer.setData('text/plain',String(id));}catch(e){}ev.target.classList.add('dragging');window.__dragged=true;}
+function dEnd(){dragId=null;window.__dragged=false;document.querySelectorAll('.ccard.dragging').forEach(el=>el.classList.remove('dragging'));document.querySelectorAll('.pc.drag-over').forEach(el=>el.classList.remove('drag-over'));}
+function dOver(ev){ev.preventDefault();ev.dataTransfer.dropEffect='move';const pc=ev.target.closest('.pc');if(pc)pc.classList.add('drag-over');}
+function dLeave(ev){const pc=ev.target.closest('.pc');if(pc&&!pc.contains(ev.relatedTarget))pc.classList.remove('drag-over');}
+function dDrop(ev,stage){ev.preventDefault();const pc=ev.target.closest('.pc');if(pc)pc.classList.remove('drag-over');const id=dragId;dragId=null;if(id==null)return;const c=db.contacts.find(x=>x.id===id);if(!c||c.etapa===stage)return;setTimeout(()=>{window.__dragged=false;},50);setEt(id,stage);}
+// Táctil: mantén presionada la tarjeta (o arrástrala) para moverla; un toque normal abre la ficha
+function tStart(ev,id,el){
+  if(ev.touches.length!==1)return;
+  touchDrag={id,el,moved:false};
+  touchTimer=setTimeout(()=>{if(touchDrag&&touchDrag.id===id){touchDrag.armed=true;el.classList.add('lift');showToast('Arrastra a otra columna');}},280);
+}
+function tMove(ev,el){
+  if(!touchDrag)return;
+  const t=ev.touches[0];
+  const dx=Math.abs(t.clientX-(touchDrag.x0||t.clientX));
+  if(touchDrag.x0===undefined){touchDrag.x0=t.clientX;touchDrag.y0=t.clientY;}
+  const dy=Math.abs(t.clientY-touchDrag.y0);
+  if(dx>8||dy>8){touchDrag.moved=true;clearTimeout(touchTimer);}
+  if(touchDrag.armed){
+    ev.preventDefault();
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    const pc=under&&under.closest?under.closest('.pc'):null;
+    document.querySelectorAll('.pc.drag-over').forEach(x=>{if(x!==pc)x.classList.remove('drag-over');});
+    if(pc)pc.classList.add('drag-over');
+  }
+}
+function tEnd(ev){
+  clearTimeout(touchTimer);
+  if(!touchDrag)return;
+  const {id,armed}=touchDrag;touchDrag=null;
+  document.querySelectorAll('.ccard.lift').forEach(el=>el.classList.remove('lift'));
+  const pcEl=document.querySelector('.pc.drag-over');
+  document.querySelectorAll('.pc.drag-over').forEach(x=>x.classList.remove('drag-over'));
+  if(armed&&pcEl){
+    window.__dragged=true;
+    const stage=pcEl.dataset.stage;
+    if(stage){const c=db.contacts.find(x=>x.id===id);if(c&&c.etapa!==stage)setEt(id,stage);}
+    setTimeout(()=>{window.__dragged=false;},350);
+  }
+}
+</script>
+
+<script>
+// ── RELACIONES ──
+function rRels(){
+  let rels=db.contacts.filter(c=>c.activo&&c.tipo==='relacion');
+  if(srol)rels=rels.filter(c=>c.rolRel===srol);
+  const withMem=rels.map(c=>({c,dias:diasSinContacto(c.id),ultMem:(c.memoria||[]).slice(-1)[0]}))
+    .sort((a,b)=>{
+      // primero los que más días sin contacto, luego alfabético
+      const da=a.dias===null?9999:a.dias,db2=b.dias===null?9999:b.dias;
+      return db2-da;
+    });
+  document.getElementById('view-relaciones').innerHTML=`
+    <div class="kpi-grid">
+      <div class="kpi-card acc"><div class="kpi-lbl">🤝 Relaciones activas</div><div class="kpi-val">${rels.length}</div><div class="kpi-sub">tu red de networking</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">🧠 Con memoria reciente</div><div class="kpi-val">${rels.filter(c=>(c.memoria||[]).some(m=>m.fecha>=new Date(Date.now()-45*864e5).toISOString().split('T')[0])).length}</div><div class="kpi-sub">últimos 45 días</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:12px">Ordenadas por días sin contacto — las del top son las que más te están debiendo un "¿cómo vas?".</div>
+    <div class="ttabs">
+      <div class="ttab${!srol?' on':''}" onclick="srol='';rRels()">Todas <span class="n">${db.contacts.filter(c=>c.activo&&c.tipo==='relacion').length}</span></div>
+      ${REL_ROLES.map(r=>`<div class="ttab${srol===r?' on':''}" onclick="srol='${r}';rRels()">${ROL_IC[r]||''} ${r} <span class="n">${db.contacts.filter(c=>c.activo&&c.tipo==='relacion'&&c.rolRel===r).length}</span></div>`).join('')}
+      <div class="ttab${srol==='—'?' on':''}" onclick="srol='—';rRels()">Sin definir <span class="n">${db.contacts.filter(c=>c.activo&&c.tipo==='relacion'&&!c.rolRel).length}</span></div>
+    </div>
+    <div class="cw">
+      ${withMem.length===0?'<div class="emp">'+(srol?`Sin relaciones clasificadas como "${srol}".`:'Aún no tienes relaciones registradas. Crea un contacto con tipo "Relación".')+'</div>':withMem.map(({c,dias,ultMem})=>{
+        let lbl,clr;
+        if(dias===null){lbl='Sin contacto registrado';clr='#DC2626';}
+        else if(dias<=14){lbl=`Contactado hace ${dias}d`;clr='#059669';}
+        else if(dias<=30){lbl=`Hace ${dias}d`;clr='#D97706';}
+        else if(dias<=60){lbl=`Hace ${dias}d — retomar`;clr='#EA580C';}
+        else{lbl=`Hace ${dias}d — urge`;clr='#DC2626';}
+        return`<div class="ri" onclick="openC(${c.id})">
+          <div class="r-dot" style="background:${clr}"></div>
+          <div style="flex:1;min-width:0">
+            <div class="rn">${e(c.nombre)} ${c.rolRel?`<span class="rel-pill" style="font-size:10px;padding:1px 7px">${ROL_IC[c.rolRel]||''} ${e(c.rolRel)}</span>`:''} ${c.fechaNacimiento&&diasCumple(c.fechaNacimiento)<=7?'<span title="Cumpleaños pronto">🎂</span>':''}</div>
+            <div class="rd">${e(c.dedica||c.empresa||c.cargo||'—')}</div>
+            ${ultMem?`<div class="rd" style="margin-top:3px;font-style:italic">🧠 "${e(ultMem.texto)}"</div>`:''}
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:11px;font-weight:700;color:${clr}">${lbl}</div>
+            ${c.proxContacto?`<div class="rdt">Próx: ${fd(c.proxContacto)}</div>`:''}
+          </div>
+        </div>`;}).join('')}
+    </div>`;
 }
 
 // ── CLIENTES ──
-function diasSinContacto(cid){
-  const acts=db.actividades.filter(a=>a.contactoId===cid);
-  if(!acts.length)return null;
-  const ultima=acts.reduce((mx,a)=>a.fecha>mx?a.fecha:mx,acts[0].fecha);
-  return Math.round((new Date()-new Date(ultima+'T12:00:00'))/86400000);
-}
 function rClientes(){
   const clientes=db.contacts.filter(c=>c.activo&&c.etapa==='Cliente');
+  const anteriores=db.contacts.filter(c=>c.activo&&c.etapa==='Cliente Anterior');
   const mrr=clientes.reduce((s,c)=>s+(c.valor||0),0);
   const rows=clientes.map(c=>({c,dias:diasSinContacto(c.id)})).sort((a,b)=>(b.dias===null?9999:b.dias)-(a.dias===null?9999:a.dias));
   document.getElementById('view-clientes').innerHTML=`
     <div class="kpi-grid">
-      <div class="kpi-card acc"><div class="kpi-lbl">⭐ Clientes activos</div><div class="kpi-val">${clientes.length}</div><div class="kpi-sub">de tu meta: 6</div></div>
+      <div class="kpi-card acc"><div class="kpi-lbl">⭐ Clientes activos</div><div class="kpi-val">${clientes.length}</div><div class="kpi-sub">de tu meta: 6-8</div></div>
       <div class="kpi-card"><div class="kpi-lbl">💰 MRR total</div><div class="kpi-val">${mxn(mrr)}</div><div class="kpi-sub">por mes</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">🕰️ Clientes anteriores</div><div class="kpi-val">${anteriores.length}</div><div class="kpi-sub">para reactivar</div></div>
     </div>
     <div class="sh"><span class="st">Estado de seguimiento</span></div>
     <div class="cw">
-      ${rows.length===0?'<div class="emp">Aún no tienes clientes activos. Conviértelos desde su ficha o el Pipeline.</div>':rows.map(({c,dias})=>{
+      ${rows.length===0?'<div class="emp">Aún no tienes clientes activos.</div>':rows.map(({c,dias})=>{
         let lbl,clr;
         if(dias===null){lbl='Sin actividad registrada';clr='#DC2626';}
         else if(dias<=14){lbl=`Último contacto hace ${dias}d`;clr='#059669';}
@@ -602,60 +783,178 @@ function rClientes(){
           </div>
         </div>`;
       }).join('')}
-    </div>`;
+    </div>
+    ${anteriores.length?`<div class="sh" style="margin-top:24px"><span class="st">Clientes anteriores (${anteriores.length}) — candidatos a reactivar</span></div>
+    <div class="cw">${anteriores.map(c=>`<div class="ri" onclick="openC(${c.id})"><div class="r-dot" style="background:#6B7280"></div><div style="flex:1"><div class="rn">${e(c.nombre)}</div><div class="rd">${[c.empresa,c.proyecto].filter(Boolean).map(x=>e(x)).join(' · ')||'—'}</div></div><div style="text-align:right"><button class="btn btn-gr btn-sm" onclick="event.stopPropagation();setEt(${c.id},'Cliente');nav('clientes')">↩ Reactivar</button></div></div>`).join('')}</div>`:''}`;
 }
-
-// ── SEGUIMIENTOS ──
-function rSegs(){
-  const pend=db.seguimientos.filter(s=>!s.completado).sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const done=db.seguimientos.filter(s=>s.completado);
-  const si=s=>{const f=fc(s.fecha);const c=db.contacts.find(x=>x.id===s.contactoId);return`<div class="sgi${s.completado?' done':''}"><div class="sg-date"><div class="sg-d">${f.d}</div><div class="sg-m">${f.m}</div></div><div style="flex:1"><div class="sg-cn">${e(s.contacto)}</div>${s.empresa?`<div class="sg-em">${e(s.empresa)}</div>`:''}<div class="sg-mo">${e(s.motivo)}</div></div>${c?`<button class="btn btn-se btn-sm" onclick="openC(${c.id})">Ver →</button>`:''}${!s.completado?`<button class="btn btn-pr btn-sm" onclick="completar('${s.id}')">✓ Listo</button>`:'<span class="badge badge-cliente">✓ Hecho</span>'}</div>`;};
-  document.getElementById('view-seguimientos').innerHTML=`
-    <div class="sh"><span class="st">Pendientes (${pend.length})</span></div>
-    <div class="sl2">${pend.length===0?'<div style="text-align:center;padding:48px;color:var(--mu)">🎉 ¡Sin pendientes!</div>':pend.map(si).join('')}</div>
-    ${done.length?`<div class="sh" style="margin-top:28px"><span class="st" style="color:var(--mu)">Completados (${done.length})</span></div><div class="sl2">${done.map(si).join('')}</div>`:''}`;
-}
-function completar(id){const s=db.seguimientos.find(x=>x.id===id);if(s){s.completado=true;saveDB();rSegs();}}
 
 // ── BAJA ──
 function rBaja(){
   const list=db.contacts.filter(c=>!c.activo);
   document.getElementById('view-baja').innerHTML=`
     <div class="sh"><span class="st">Contactos de baja (${list.length})</span></div>
-    <div class="cw"><table><thead><tr><th>Nombre</th><th>Empresa</th><th>Cargo</th><th></th></tr></thead><tbody>
+    <div class="cw"><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Empresa</th><th></th></tr></thead><tbody>
       ${list.length===0?`<tr><td colspan="4" class="emp">Sin contactos de baja</td></tr>`:list.map(c=>`
         <tr>
           <td class="tdn"><span class="baja-tag">🚫</span> ${e(c.nombre)}</td>
+          <td>${bTipo(c.tipo)}</td>
           <td class="tdm">${e(c.empresa)||'—'}</td>
-          <td class="tdm">${e(c.cargo)||'—'}</td>
           <td><button class="btn btn-gr btn-sm" onclick="reactivar(${c.id})">↩ Reactivar</button></td>
         </tr>`).join('')}
     </tbody></table></div>`;
 }
-function reactivar(id){const c=db.contacts.find(x=>x.id===id);if(c){c.activo=true;c.etapa='Prospecto';saveDB();rBaja();showToast('Contacto reactivado como Prospecto');}}
+function reactivar(id){const c=db.contacts.find(x=>x.id===id);if(c){c.activo=true;if(c.etapa==='Perdido')c.etapa='Prospecto';saveDB();nav(V);showToast('Contacto reactivado');}}
+
+// ── SUGERENCIAS DE SIGUIENTE PASO (reglas locales, usan tu historial real) ──
+function genSugerencia(c){
+  const first=(c.nombre||'').split(' ')[0]||'';
+  const acts=db.actividades.filter(a=>a.contactoId===c.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const last=acts[0];
+  const dias=last?Math.round((new Date()-new Date(last.fecha+'T12:00:00'))/864e5):null;
+  const cumple=c.fechaNacimiento?diasCumple(c.fechaNacimiento):null;
+  if(c.tipo==='relacion'){
+    const porRol={
+      'Referente':`Toca base con ${first}: cuéntale brevemente a quién ayudas hoy (dueños con 5-50 empleados atrapados en la operación) y pídele que te conecte con 1-2 personas de su red que encajen. Un referente activo vale más que 10 anuncios.`,
+      'Alianza':`Explora con ${first} una colaboración concreta: webinar conjunto, contenido compartido o un paquete de servicios complementarios. Propón una llamada de 30 min para brainstormear.`,
+      'Colaborador':`Retoma con ${first} el estado de lo que están trabajando juntos. Define próximos pasos, fechas y quién hace qué.`,
+      'Mentor':`Agenda una sesión con ${first}: prepárate con 2-3 preguntas concretas sobre tu negocio. Lleva anotado qué has aplicado de la última vez.`,
+      'Networking':`Mantén vivo el contacto con ${first}: coméntale algo de su industria o invítalo a un evento. El networking rende cuando das antes de pedir.`,
+      'Amigo':`Una llamada o café con ${first} sin agenda. Los amigos también son red: cuéntale naturalmente en qué andas (sin pitch) y escucha en qué puedes apoyarlo tú.`
+    };
+    const opts=[
+      porRol[c.rolRel]||`Mándale un mensaje de valor a ${first}: compártale un artículo o dato útil para su negocio, sin pedir nada a cambio.`,
+      `Retoma contacto con ${first} — una llamada corta de "¿cómo va todo?" ${c.dedica?`Pregúntale cómo va lo de "${c.dedica.slice(0,50)}"`:''}.`,
+      `Invita a ${first} a un café o desayuno de catch-up. Las relaciones se cultivan antes de necesitarlas.`
+    ];
+    if(cumple!==null&&cumple<=14)opts.unshift(`🎂 Su cumpleaños es ${cumple===0?'HOY':`en ${cumple} días`}: felicítalo de forma personal${c.detallePersonal?`, mencionando algo que sabes de él (${c.detallePersonal.slice(0,40)}…)`:''}.`);
+    if(dias!==null&&dias>45)opts.unshift(`Llevas ${dias} días sin contactarlo — los estudios dicen que si pasa más de 90, la relación se enfría. Hoy es buen día.`);
+    return opts[0];
+  }
+  const map={
+    'Prospecto':`Primer acercamiento a ${first}: mensaje breve pidiendo 20 min para conocer su negocio${c.empresa?' en '+c.empresa:''}. Sin vender, solo curiosidad genuina.${c.planContacto?' Contexto: '+c.planContacto:''}`,
+    'Por Contactar':`Contacta a ${first} esta semana. Ángulo sugerido: ${c.planContacto||'ofrecer una sesión diagnóstica gratuita de 30 minutos.'}`,
+    'Contactado':`Segundo toque con ${first}${last&&last.notas?` — retoma "${last.notas.slice(0,50)}${last.notas.length>50?'…':''}"`:' — agenda la llamada de descubrimiento'}. Propón fecha y hora concretas, no "cuándo te quede bien".`,
+    'Reunión Agendada':`Prepara la reunión con ${first}: repasa su empresa, define 3 preguntas de diagnóstico y qué paquete (Consultoría / Consejería / Coaching) podría calzar. Después de la reunión, registra el resumen aquí.`,
+    'Propuesta Enviada':`Dale seguimiento a la propuesta de ${first}${dias!==null?` (lleva ${dias} días enviada)`:''}. Si pasan 5 días sin respuesta, un toque ligero por WhatsApp; a los 10, llamada directa.`,
+    'Cliente':`Check-in con ${first}: pregunta por los avances${c.proyecto?' de '+c.proyecto:''}${c.memoria&&c.memoria.length?` y menciona algo personal: "${c.memoria[c.memoria.length-1].texto.slice(0,50)}"`:''}.`,
+    'Cliente Anterior':`Reactiva a ${first}: mensaje de "¿cómo va todo?" genuino${c.proyecto?`, mencionando lo que trabajaron en ${c.proyecto}`:''}. Evalúa si es momento de una nueva etapa o de pedir un referido.`
+  };
+  let s=map[c.etapa]||map['Prospecto'];
+  if(cumple!==null&&cumple<=7)s=`🎂 Cumpleaños ${cumple===0?'hoy':`en ${cumple} días`} — felicita a ${first} antes de cualquier paso comercial.`;
+  if(c.temperatura==='Hot'&&isOpen(c))s=`🔥 Contacto caliente: prioriza a ${first} hoy. `+s;
+  return s;
+}
+
+// ── MENSAJES SUGERIDOS (plantillas locales, usan tu historial real y rol) ──
+function craftPool(c){
+  const first=(c.nombre||'').split(' ')[0]||'';
+  const proj=c.proyecto?(' de '+c.proyecto):'';
+  const acts=db.actividades.filter(a=>a.contactoId===c.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const last=acts[0];
+  const lastStep=(last&&last.proximoPaso)||'';
+  const lastNota=(last&&last.notas)||'';
+  // Mensajes por rol para relaciones
+  const porRol={
+    'Referente':[
+      `Hola ${first}, ¿cómo estás? Estoy abriendo espacio para 2-3 proyectos nuevos de consultoría${c.empresa?' con empresas como '+e(c.empresa):''}. Si se te ocurre alguien de tu red que esté atrapado en la operación de su negocio, te agradezco mucho la conexión.`,
+      `Hola ${first}, buen día. Una pregunta rápida: ¿a quién de tu círculo le vendría bien una mano para delegar y ordenar su empresa? Tu recomendación pesa mucho.`
+    ],
+    'Alianza':[
+      `Hola ${first}, ¿cómo va todo? Me puse a pensar en cómo podríamos complementarnos tú y yo. ¿Te late una llamada de 30 min para brainstormear algo conjunto?`,
+      `Hola ${first}, tengo una idea de colaboración que podría servirle a ambos (webinar conjunto o paquete de servicios). Cuando tengas chance te cuento.`
+    ],
+    'Colaborador':[
+      `Hola ${first}, ¿cómo vamos con lo nuestro? Dame un update cuando puedas para ir afinando próximos pasos.`,
+      `${first}, buen día. ¿Tienes 15 min esta semana para cuadrar avances y pendientes?`
+    ],
+    'Mentor':[
+      `Hola ${first}, ¿cómo estás? Me encantaría tomarte 30 minutos de asesoría — traigo 2-3 preguntas concretas sobre mi negocio. ¿Cuándo te acomoda?`,
+      `${first}, aplicé lo que me comentaste la última vez y quiero contarte cómo me fue. ¿Un café pronto?`
+    ],
+    'Networking':[
+      `Hola ${first}, ¿cómo va todo? Vi algo de tu industria y me acordé de ti. ¿Cómo van los proyectos?`,
+      `${first}, buen día. ¿Vas a algún evento pronto? Me gustaría ponerme al corriente contigo.`
+    ],
+    'Amigo':[
+      `Hola ${first}, ¿cómo estás? Sin nada que pedir, solo para saludarte bien. ¿Cómo va la familia?`,
+      `${first}, me acordé de ti${c.memoria&&c.memoria.length?` por lo de "${e(c.memoria[c.memoria.length-1].texto.slice(0,40))}"`:''}. ¿Cómo va todo? Un abrazo.`
+    ]
+  };
+  const pool={
+    'Relación':porRol[c.rolRel]||[
+      `Hola ${first}, ¿cómo va todo? Me acordé de ti${c.dedica?' por lo de '+e(c.dedica.slice(0,40)):''} y quería saludarte. ¿Cómo va ese proyecto?`,
+      `Hola ${first}, ¿cómo estás? Sin agenda ni nada, solo para decirte que sigo aquí si algo se te ofrece. Un abrazo.`,
+      ...(porRol[c.rolRel]||[])
+    ],
+    'Prospecto':[
+      `Hola ${first}, soy Rolando. ${c.planContacto||'Ando platicando con dueños de negocio sobre cómo llevan la operación del día a día.'} ¿Te late un café esta semana?`,
+      `${first}, buen día. Me dio curiosidad conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Tienes 20 minutos esta semana?`,
+      `Hola ${first}, soy Rolando, consultor organizacional. Trabajo con dueños que sienten que "si no estoy yo, todo se cae". Me encantaría conocer tu caso — sin compromiso, 20 minutos.`,
+      `${first}, ¿quién se encarga de la operación cuando tú no estás? Es la pregunta con la que empiezo siempre. ¿Te interesa platicarlo un día?`
+    ],
+    'Por Contactar':[
+      c.planContacto?`Hola ${first}, soy Rolando. ${c.planContacto} ¿Tienes unos minutos esta semana para platicar?`:`Hola ${first}, soy Rolando, consultor organizacional. Me gustaría conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Un café esta semana?`,
+      `Hola ${first}, buen día. Te escribo porque${c.fuente==='Referido'?' un conocido en común me habló muy bien de ti':'me encontré con tu perfil y me pareció interesante lo que haces'}. ¿Tienes 15 minutos esta semana para una llamada corta?`,
+      `${first}, soy Rolando. Ando armando mi agenda de este mes con dueños de empresa${c.empresa?' del sector de '+e(c.empresa):''}. ¿Te late un café la próxima semana?`
+    ],
+    'Contactado':[
+      lastStep?`${first}, ¿cómo vas? Quedamos en ${lastStep} — ¿cómo ves si lo checamos esta semana?`:`${first}, ¿cómo vas? Quería darle seguimiento a lo que platicamos. ¿Agendamos una llamada corta?`,
+      `Hola ${first}. No quiero dejar la conversación en el aire — ¿nos vemos 30 minutos esta semana?`,
+      `${first}, buen día. Desde que platicamos me quedé pensando en lo que me contaste${lastNota?` sobre "${e(lastNota.slice(0,45))}"`:''}. Tengo un par de ideas que podrían servirte. ¿Te las comparto en una llamada?`,
+      `Hola ${first}, ¿ya tuviste chance de pensar en lo que conversamos? Sin presión — solo para que sepas que sigo al pendiente.`
+    ],
+    'Reunión Agendada':[
+      `${first}, te confirmo nuestra reunión${proj}. Cualquier cosa antes, aquí ando.`,
+      `Hola ${first}, todo listo para la reunión. Si quieres que toque algún tema en particular, dime.`,
+      `${first}, antes de nuestra reunión: si puedes, anota tus 3 mayores dolores de operación. Con eso aprovechamos mejor el tiempo.`
+    ],
+    'Propuesta Enviada':[
+      `${first}, ¿cómo vas con la propuesta${proj}? Quedo al pendiente por si tienes dudas o quieres que ajustemos algo.`,
+      `Hola ${first}. Dando seguimiento a la propuesta que te mandé. ¿La pudiste revisar?`,
+      `${first}, sé que revisar una propuesta toma tiempo. Si te sirve, hacemos una llamada de 15 min y te la explico sección por sección. ¿Cuándo te acomoda?`,
+      `Hola ${first}, no he querido insistir, pero tampoco quiero que se enfríe lo que platicamos. ¿Hay algo que te detenga para decidir?`
+    ],
+    'Cliente':[
+      `${first}, ¿cómo va todo${proj}? Aquí ando al pendiente de lo que necesites.`,
+      `Hola ${first}, quería saludarte y ver cómo va${proj||' el trabajo que llevamos'}.`,
+      lastNota?`Hola ${first}, sigo pensando en lo de "${e(lastNota.slice(0,45))}". ¿Cómo va?`:`Hola ${first}, ¿cómo te sientes con los avances? Esta semana toca revisar dónde vamos.`,
+      `${first}, ¿qué ha sido lo más útil hasta ahora${proj}? Me ayuda a saber si vamos por buen camino.`
+    ],
+    'Cliente Anterior':[
+      `${first}, ¿cómo estás? Pasaba a saludar y a ver cómo va todo${c.empresa?' en '+e(c.empresa):''}. Me encantaría ponerme al corriente.`,
+      `Hola ${first}, qué bueno saludarte. Si alguna vez quieres retomar donde quedamos${proj||''}, aquí ando. Y si no, también es bueno saber de ti.`,
+      `${first}, buen día. Estoy haciendo un ejercicio con clientes pasados: ¿qué fue lo que más te sirvió de lo que trabajamos? Me ayuda a mejorar. Un abrazo.`
+    ]
+  };
+  return pool[c.etapa]||pool['Prospecto'];
+}
 
 // ── CONTACT MODAL ──
-function openC(id){sid=id;ctab='info';sact=null;sNota='';sFecha='';msgTxt=null;renderCM();document.getElementById('modal-c').classList.add('open');}
+function openC(id){sid=id;ctab='info';sact=null;sNota='';sPaso='';sFecha='';sResumen='';msgTxt=null;sugTxt=null;renderCM();document.getElementById('modal-c').classList.add('open');}
 function closeC(){document.getElementById('modal-c').classList.remove('open');sid=null;}
 function renderCM(){
   const c=db.contacts.find(x=>x.id===sid);if(!c)return;
   document.getElementById('mc-hdr').innerHTML=`
     <button class="mc" onclick="closeC()">×</button>
     <div class="mt2">${e(c.nombre)}${!c.activo?` <span class="baja-tag">🚫 De baja</span>`:''}</div>
-    <div class="ms">${c.empresa?`<span>${e(c.empresa)}</span> · `:''} ${c.valor?`<span style="font-weight:700;color:var(--teal-dk)">${mxn(c.valor)}/mes</span> · `:''} ${bS(c.etapa)} ${bT(c.temperatura)}${c.fechaNacimiento&&diasCumple(c.fechaNacimiento)<=7?' 🎂':''}</div>`;
-  document.getElementById('mc-tabs').innerHTML=['info','seguimiento','historial'].map((t,i)=>`<div class="mta${ctab===t?' active':''}" onclick="stab('${t}')">${['📋 Información','📝 Seguimiento','📖 Historial'][i]}</div>`).join('');
+    <div class="ms">${bTipo(c.tipo)}${c.rolRel?` <span class="rel-pill">${ROL_IC[c.rolRel]||''} ${e(c.rolRel)}</span>`:''} ${bS(c.etapa)} ${bT(c.temperatura)}${c.valor?` · <span style="font-weight:700;color:var(--teal-dk)">${mxn(c.valor)}/mes</span>`:''}${c.fechaNacimiento&&diasCumple(c.fechaNacimiento)<=7?' 🎂':''}</div>`;
+  document.getElementById('mc-tabs').innerHTML=[['info','📋 Info'],['seg','💬 Seguimiento'],['hist','📖 Bitácora']].map(([t,l])=>`<div class="mta${ctab===t?' active':''}" onclick="stab('${t}')">${l}</div>`).join('');
   renderCB(c);
 }
-function stab(t){ctab=t;sact=null;if(t==='seguimiento')msgTxt=null;renderCM();}
+function stab(t){ctab=t;sact=null;if(t==='seg'){msgTxt=null;sugTxt=null;}renderCM();}
 
 function renderCB(c){
   const b=document.getElementById('mc-body');
   if(ctab==='info'){
+    const mem=(c.memoria||[]).slice().sort((a,b2)=>b2.fecha.localeCompare(a.fecha));
     b.innerHTML=`
-      <!-- Etapa -->
+      <div class="form-sec">
+        <div class="fs-title">Tipo de contacto</div>
+        <div class="sr">${Object.keys(TIPOS).map(t=>`<button class="sbtn${c.tipo===t?' cur':''}" onclick="setTipo(${c.id},'${t}')">${TIPOS[t].ic} ${TIPOS[t].lbl}</button>`).join('')}</div>
+      </div>
       <div class="form-sec">
         <div class="fs-title">Etapa del proceso</div>
-        <div class="sr">${STAGES.map(s=>`<button class="sbtn${c.etapa===s.id?' cur':''}" onclick="setEt(${c.id},'${s.id}')"><span style="width:6px;height:6px;border-radius:50%;background:${s.color};display:inline-block"></span>${s.id}</button>`).join('')}</div>
+        <div class="sr">${STAGES.filter(s=>s.id!=='Relación').map(s=>`<button class="sbtn${c.etapa===s.id?' cur':''}" onclick="setEt(${c.id},'${s.id}')"><span style="width:6px;height:6px;border-radius:50%;background:${s.color};display:inline-block"></span>${s.id}</button>`).join('')}</div>
         <div style="margin-top:10px;font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px">Temperatura</div>
         <div style="display:flex;gap:6px">${['Cold','Warm','Hot'].map(t=>`<button class="sbtn${c.temperatura===t?' cur':''}" onclick="setTe(${c.id},'${t}')">${bT(t)} ${t}</button>`).join('')}</div>
       </div>
@@ -663,76 +962,91 @@ function renderCB(c){
         <div class="fs-title">Plan de contacto</div>
         <textarea class="nta" rows="2" placeholder="¿Qué le vas a decir o proponer?" onchange="setF(${c.id},'planContacto',this.value)">${e(c.planContacto||'')}</textarea>
       </div>
-      <!-- A: Contacto -->
       <div class="form-sec">
         <div class="fs-title">A — Datos de contacto</div>
         <div class="eg">
-          <div class="ef full"><label>Nombre completo</label><input value="${e(c.nombre||'')}" placeholder="Nombre del contacto" onchange="setF(${c.id},'nombre',this.value)"></div>
+          <div class="ef full"><label>Nombre completo</label><input value="${e(c.nombre||'')}" onchange="setF(${c.id},'nombre',this.value)"></div>
           <div class="ef"><label>Email</label><input type="email" value="${e(c.email||'')}" onchange="setF(${c.id},'email',this.value)"></div>
           <div class="ef"><label>Teléfono / WhatsApp</label><input value="${e(c.tel||'')}" onchange="setF(${c.id},'tel',this.value)"></div>
-          <div class="ef full"><label>Contacto adicional (segundo tel o email)</label><input value="${e(c.contacto2||'')}" placeholder="Ej. +52 81 9999 0000 o otro@mail.com" onchange="setF(${c.id},'contacto2',this.value)"></div>
+          <div class="ef full"><label>Contacto adicional</label><input value="${e(c.contacto2||'')}" onchange="setF(${c.id},'contacto2',this.value)"></div>
           <div class="ef"><label>Empresa / Organización</label><input value="${e(c.empresa||'')}" onchange="setF(${c.id},'empresa',this.value)"></div>
           <div class="ef"><label>Cargo / Puesto</label><input value="${e(c.cargo||'')}" onchange="setF(${c.id},'cargo',this.value)"></div>
-          <div class="ef"><label>Fuente del lead</label>
-            <select onchange="setF(${c.id},'fuente',this.value)">
-              <option value="">Selecciona...</option>
-              ${FUENTES.map(f=>`<option${c.fuente===f?' selected':''}>${f}</option>`).join('')}
+          <div class="ef"><label>Fuente</label><select onchange="setF(${c.id},'fuente',this.value)"><option value="">Selecciona...</option>${FUENTES.map(f=>`<option${c.fuente===f?' selected':''}>${f}</option>`).join('')}</select></div>
+        </div>
+      </div>
+      <div class="form-sec">
+        <div class="fs-title">B — Personal</div>
+        <div class="eg">
+          <div class="ef"><label>Fecha de nacimiento</label><input type="date" id="fn-${c.id}" value="${e(c.fechaNacimiento||'')}" onchange="setF(${c.id},'fechaNacimiento',this.value)"></div>
+          <div class="ef"><label>Edad</label><div class="rd">${calcEdad(c.fechaNacimiento)}</div></div>
+          <div class="ef"><label>¿Cómo te puede ayudar? (rol)</label>
+            <select onchange="setF(${c.id},'rolRel',this.value)">
+              <option value="">Sin definir</option>
+              ${REL_ROLES.map(r=>`<option${c.rolRel===r?' selected':''}>${r}</option>`).join('')}
             </select>
           </div>
+          <div class="ef full"><label>¿A qué se dedica?</label><input value="${e(c.dedica||'')}" placeholder="Su giro, negocio, actividad..." onchange="setF(${c.id},'dedica',this.value)"></div>
+          <div class="ef full"><label>Detalles importantes</label><textarea rows="2" placeholder="Familia, gustos, cómo lo conociste..." onchange="setF(${c.id},'detallePersonal',this.value)">${e(c.detallePersonal||'')}</textarea></div>
         </div>
       </div>
-      <!-- B: Personal -->
       <div class="form-sec">
-        <div class="fs-title">B — Información personal</div>
-        <div class="eg">
-          <div class="ef"><label>Fecha de nacimiento</label><input type="date" id="fn-${c.id}" value="${e(c.fechaNacimiento||'')}" onchange="setF(${c.id},'fechaNacimiento',this.value);document.getElementById('edad-${c.id}').textContent=calcEdad(this.value)"></div>
-          <div class="ef"><label>Edad</label><div class="rd" id="edad-${c.id}">${calcEdad(c.fechaNacimiento)}</div></div>
+        <div class="fs-title">🧠 Memoria viva <span style="text-transform:none;font-weight:400">— lo que debe estar presente en tu próxima conversación</span></div>
+        ${mem.length?mem.map(m=>`<div class="mem-item"><div class="mem-f">${fd(m.fecha)}</div><div class="mem-t">${e(m.texto)}</div></div>`).join(''):'<div style="font-size:12px;color:var(--mu);margin-bottom:4px">Sin apuntes aún. Anota aquí lo que te cuenten: viajes, cambios de trabajo, cumpleaños de su familia, proyectos...</div>'}
+        <div class="mem-add">
+          <input id="mem-txt" placeholder="Ej. Le cambiaron de puesto a Director, viaja a España en noviembre...">
+          <button class="btn btn-pr btn-sm" onclick="addMem(${c.id})">+ Guardar</button>
         </div>
       </div>
-      <!-- C: Comercial -->
       <div class="form-sec">
         <div class="fs-title">C — Comercial</div>
         <div class="eg">
-          <div class="ef"><label>Valor mensual (MXN)</label><input type="number" value="${c.valor||''}" min="0" placeholder="0" onchange="setF(${c.id},'valor',parseInt(this.value)||0)"></div>
-          <div class="ef"><label>Proyecto / Programa</label><input value="${e(c.proyecto||'')}" onchange="setF(${c.id},'proyecto',this.value)"></div>
+          <div class="ef"><label>Valor mensual (MXN)</label><input type="number" value="${c.valor||''}" min="0" onchange="setF(${c.id},'valor',parseInt(this.value)||0)"></div>
+          <div class="ef"><label>Proyecto / Servicio</label><input value="${e(c.proyecto||'')}" onchange="setF(${c.id},'proyecto',this.value)"></div>
           <div class="ef"><label>Próx. Contacto</label><input type="date" value="${e(c.proxContacto||'')}" onchange="setF(${c.id},'proxContacto',this.value)"></div>
         </div>
       </div>
-      <!-- D: Productos -->
       <div class="form-sec">
-        <div class="fs-title">D — Productos de interés</div>
-        <div class="prod-grid">
-          ${PRODUCTOS.map(p=>{const chk=(c.productos||[]).includes(p);return`<label class="prod-chip${chk?' checked':''}" onclick="toggleProd(${c.id},'${p}',this)"><span>${PI[p]||''} ${p}</span></label>`;}).join('')}
-        </div>
+        <div class="fs-title">D — Servicios de interés</div>
+        <div class="prod-grid">${PRODUCTOS.map(p=>{const chk=(c.productos||[]).includes(p);return`<label class="prod-chip${chk?' checked':''}" onclick="toggleProd(${c.id},'${p}',this)"><span>${PI[p]||''} ${p}</span></label>`;}).join('')}</div>
       </div>
-      <!-- E: Notas -->
       <div class="form-sec">
         <div class="fs-title">E — Notas generales</div>
-        <textarea class="nta" rows="4" onchange="setF(${c.id},'notas',this.value)">${e(c.notas||'')}</textarea>
+        <textarea class="nta" rows="3" onchange="setF(${c.id},'notas',this.value)">${e(c.notas||'')}</textarea>
       </div>
-      <!-- Acciones -->
       <div class="action-bar">
         ${c.activo?`
           ${c.etapa!=='Cliente'?`<button class="btn btn-gr" onclick="aCliente(${c.id})">⭐ Convertir a Cliente</button>`:`<span class="badge badge-cliente" style="font-size:13px;padding:6px 12px">⭐ Cliente activo</span>`}
+          ${c.etapa==='Cliente'?`<button class="btn btn-amb btn-sm" onclick="setEt(${c.id},'Cliente Anterior')">🕰️ Marcar como anterior</button>`:''}
           <button class="btn btn-re" onclick="baja(${c.id})">🚫 Dar de Baja</button>
         `:`<button class="btn btn-gr" onclick="reactivar(${c.id});closeC();showToast('Contacto reactivado')">↩ Reactivar contacto</button>`}
       </div>`;
-  } else if(ctab==='seguimiento'){
+  } else if(ctab==='seg'){
     if(msgTxt===null)msgTxt=craftPool(c)[0];
+    if(sugTxt===null)sugTxt=genSugerencia(c);
     b.innerHTML=`
-      <div class="qn">
-        <div class="qn-title">💬 Sugerencia de mensaje — ${e(c.etapa)}</div>
+      <div class="sug-box">
+        <div class="sug-title">🧭 Siguiente paso sugerido</div>
+        <div class="sug-txt">${e(sugTxt)}</div>
+        <div style="margin-top:9px"><button class="btn btn-se btn-sm" onclick="sugTxt=genSugerencia(db.contacts.find(x=>x.id===${c.id}));renderCM()">🔄 Otra sugerencia</button></div>
+      </div>
+      <div class="qn" style="background:linear-gradient(135deg,#E0F7FC,#F0F9FF);border-color:#A5F3FC">
+        <div class="qn-title" style="color:#0E7490">💬 Mensaje sugerido — ${e(c.etapa)}</div>
         <div class="nb" id="msg-out">${e(msgTxt)}</div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           <button class="btn btn-se btn-sm" onclick="regenMsg(${c.id})">🔄 Otra opción</button>
-          <button class="btn btn-se btn-sm" onclick="copyMsg()">📋 Copiar</button>
-          ${c.tel?`<button class="btn btn-pr btn-sm" onclick="sendMsgWA(${c.id})">💬 Abrir WhatsApp</button>`:`<span style="font-size:11px;color:var(--mu);align-self:center">Agrega el teléfono para enviar directo</span>`}
+          <button class="btn btn-se btn-sm" onclick="navigator.clipboard&&navigator.clipboard.writeText(msgTxt||'').then(()=>showToast('Copiado ✓'))">📋 Copiar</button>
+          ${c.tel?`<button class="btn btn-pr btn-sm" onclick="sendMsgWA(${c.id})">💬 Abrir WhatsApp</button>`:''}
         </div>
       </div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);margin-bottom:8px">Registrar interacción</div>
       <div class="ab">${Object.keys(TI).map(t=>`<button class="abt${sact===t?' sel':''}" onclick="setSA('${t}')">${TI[t]} ${t}</button>`).join('')}</div>
-      <textarea class="nta" id="act-n" placeholder="Escribe una nota de esta actividad…" rows="3" oninput="sNota=this.value">${e(sNota)}</textarea>
-      <div style="display:flex;gap:10px;margin-top:11px;align-items:flex-end">
-        <div class="ef" style="flex:1"><label>Agendar próximo seguimiento</label><input type="date" id="act-fd" style="margin-top:4px" value="${e(sFecha)}" onchange="sFecha=this.value"></div>
+      <textarea class="nta" id="act-n" placeholder="Nota de la conversación (qué platicaron, cómo quedaron)..." rows="3" oninput="sNota=this.value">${e(sNota)}</textarea>
+      <textarea class="nta" id="act-r" style="min-height:56px;margin-top:8px" placeholder="Resumen de reunión (opcional — o impórtalo desde la pestaña Bitácora)..." rows="2" oninput="sResumen=this.value">${e(sResumen)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+        <input class="si" style="flex:2;min-width:180px" id="act-p" placeholder="Próximo paso (qué quedó pendiente)..." value="${e(sPaso)}" oninput="sPaso=this.value">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;align-items:flex-end">
+        <div class="ef" style="flex:1"><label>Agendar próximo contacto</label><input type="date" id="act-fd" value="${e(sFecha)}" onchange="sFecha=this.value"></div>
         <button class="btn btn-pr" onclick="gAct()">Guardar</button>
       </div>
       <div style="border-top:1px solid var(--bd);margin-top:18px;padding-top:14px">
@@ -740,11 +1054,22 @@ function renderCB(c){
         ${rHist(c.id,3)}
       </div>`;
   } else {
-    // Historial tab: quick note at top
     b.innerHTML=`
+      <div class="gra-box">
+        <div class="gra-title">🎙️ Importar resumen de Granola</div>
+        <div class="gra-hint">Copia el resumen de tu reunión en Granola (Share → Copy) y pégalo aquí. Se guardará como una reunión en la bitácora de ${e((c.nombre||'').split(' ')[0])}.</div>
+        <textarea class="nta" id="gra-txt" rows="5" placeholder="Pega aquí el resumen de Granola..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+          <div class="ef" style="flex:1;min-width:140px"><label>Fecha de la reunión</label><input type="date" id="gra-fd" value="${todayISO()}"></div>
+          <button class="btn btn-pr btn-sm" onclick="importarGranola(${c.id})">Importar a bitácora</button>
+        </div>
+      </div>
       <div class="qn">
-        <div class="qn-title">📝 Añadir nota rápida al historial</div>
-        <textarea class="nta" id="qn-txt" placeholder="Escribe tu nota aquí…" rows="2"></textarea>
+        <div class="qn-title">📝 Nota rápida</div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <textarea class="nta" id="qn-txt" placeholder="Apunte rápido..." rows="2" style="flex:1"></textarea>
+          <button class="mic-btn" id="mic-btn" title="Dictar por voz" onclick="toggleDictado()">🎤</button>
+        </div>
         <div style="margin-top:8px;text-align:right"><button class="btn btn-pr btn-sm" onclick="guardarNota(${c.id})">Guardar nota</button></div>
       </div>
       ${rHist(c.id,50)}`;
@@ -753,101 +1078,81 @@ function renderCB(c){
 
 function rHist(cid,lim){
   const acts=db.actividades.filter(a=>a.contactoId===cid).sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,lim);
-  if(!acts.length)return'<div class="emp">Sin actividades registradas</div>';
-  return acts.map(a=>`<div class="hi"><div class="ht"><span class="hti" style="color:${TC[a.tipo]||'#9CA3AF'}">${TI[a.tipo]||'●'} ${e(a.tipo)}</span><span class="hfe">${fd(a.fecha)}</span></div>${a.notas?`<div class="hno">${e(a.notas)}</div>`:''}${a.proximoPaso?`<div class="hnp">→ ${e(a.proximoPaso)}</div>`:''}</div>`).join('');
+  if(!acts.length)return'<div class="emp">Sin actividades registradas todavía</div>';
+  return acts.map(a=>`<div class="hi">
+    <div class="ht"><span class="hti" style="color:${TC[a.tipo]||'#9CA3AF'}">${TI[a.tipo]||'●'} ${e(a.tipo)}${a.origen==='granola'?' <span style="font-size:10px;color:#0369A1;font-weight:700">· GRANOLA</span>':''}</span><span class="hfe">${fd(a.fecha)}</span></div>
+    ${a.notas?`<div class="hno">${e(a.notas)}</div>`:''}
+    ${a.resumen?`<div class="hrs">${e(a.resumen)}</div>`:''}
+    ${a.proximoPaso?`<div class="hnp">→ Siguiente paso: ${e(a.proximoPaso)}</div>`:''}
+  </div>`).join('');
 }
 
-// ── SUGERENCIA DE MENSAJE ──
-// Nota: esto NO llama a ningún modelo de IA en vivo — una página estática no puede
-// hacerlo de forma segura sin exponer una llave. Son plantillas locales, pero sí
-// usan tu historial real (último "próximo paso" o nota) y el plan de contacto,
-// así que no son genéricas: cambian según lo que de verdad platicaste con cada quien.
-function craftPool(c){
-  const first=(c.nombre||'').split(' ')[0]||'';
-  const proj=c.proyecto?(' de '+c.proyecto):'';
-  const acts=db.actividades.filter(a=>a.contactoId===c.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const last=acts[0];
-  const lastStep=(last&&last.proximoPaso)||'';
-  const lastNota=(last&&last.notas)||'';
-  const pool={
-    'Por Contactar':[c.planContacto?`Hola ${first}, soy Rolando. ${c.planContacto} ¿Tienes unos minutos esta semana para platicar?`:`Hola ${first}, soy Rolando, coach organizacional. Me gustaría conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Un café esta semana?`],
-    'Prospecto':[
-      `Hola ${first}, qué tal. Soy Rolando — ando platicando con dueños de negocio sobre cómo llevan la operación del día a día. ¿Te late un café esta semana?`,
-      `${first}, buen día. Me dio curiosidad conocer más de tu negocio${c.empresa?' en '+e(c.empresa):''}. ¿Tienes 20 minutos esta semana o la que sigue?`
-    ],
-    'Contactado':[
-      lastStep?`${first}, ¿cómo vas? Quedamos en ${lastStep} — ¿cómo ves si lo checamos esta semana?`:`${first}, ¿cómo vas? Quería darle seguimiento a lo que platicamos. ¿Agendamos una llamada corta esta semana?`,
-      `Hola ${first}. No quiero dejar la conversación en el aire — ¿nos vemos 30 minutos esta semana?`
-    ],
-    'Reunión Agendada':[
-      `${first}, te confirmo nuestra reunión${proj}. Cualquier cosa antes, aquí ando.`,
-      `Hola ${first}, todo listo para la reunión. Si quieres que lleve algo en particular, dime.`
-    ],
-    'Propuesta Enviada':[
-      `${first}, ¿cómo vas con la propuesta${proj}? Quedo al pendiente por si tienes dudas o quieres que ajustemos algo.`,
-      `Hola ${first}. Nomás dando seguimiento a la propuesta que te mandé. ¿La pudiste revisar?`
-    ],
-    'Cliente':[
-      `${first}, ¿cómo va todo${proj}? Aquí ando al pendiente de lo que necesites.`,
-      lastNota?`Hola ${first}, seguimos con lo de "${lastNota.slice(0,50)}${lastNota.length>50?'…':''}" — ¿cómo va?`:`Hola ${first}, quería saludarte y ver cómo va${proj||' el trabajo que llevamos'}.`
-    ]
-  };
-  return pool[c.etapa]||pool['Prospecto'];
-}
-function regenMsg(id){
-  const c=db.contacts.find(x=>x.id===id);if(!c)return;
-  const pool=craftPool(c);
-  if(pool.length<=1){msgTxt=pool[0];}
-  else{
-    let n=pool[Math.floor(Math.random()*pool.length)];
-    if(n===msgTxt)n=pool[(pool.indexOf(n)+1)%pool.length];
-    msgTxt=n;
-  }
-  renderCM();
-}
-function copyMsg(){navigator.clipboard?.writeText(msgTxt||'').then(()=>showToast('Copiado ✓'));}
-function sendMsgWA(id){
-  const c=db.contacts.find(x=>x.id===id);if(!c)return;
-  const phone=(c.tel||'').replace(/\D/g,'');
-  if(!phone){showToast('Agrega el teléfono primero');return;}
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgTxt||'')}`);
+// ── MEMORIA VIVA ──
+function addMem(cid){
+  const inp=document.getElementById('mem-txt');
+  if(!inp||!inp.value.trim()){showToast('Escribe el apunte primero');return;}
+  const c=db.contacts.find(x=>x.id===cid);if(!c)return;
+  if(!c.memoria)c.memoria=[];
+  c.memoria.push({fecha:todayISO(),texto:inp.value.trim()});
+  saveDB();showToast('Apunte guardado en memoria 🧠');renderCM();
 }
 
-function setSA(t){
-  const n=document.getElementById('act-n');if(n)sNota=n.value;
-  const f=document.getElementById('act-fd');if(f)sFecha=f.value;
-  sact=t;renderCM();
+// ── GRANOLA ──
+function importarGranola(cid){
+  const txt=document.getElementById('gra-txt');
+  const fdEl=document.getElementById('gra-fd');
+  if(!txt||!txt.value.trim()){showToast('Pega el resumen primero');return;}
+  const c=db.contacts.find(x=>x.id===cid);if(!c)return;
+  const resumen=txt.value.trim();
+  db.actividades.push({id:'a'+Date.now(),contactoId:cid,contacto:c.nombre,tipo:'Reunión',fecha:fdEl?fdEl.value||todayISO():todayISO(),notas:'Resumen importado desde Granola',resumen,proximoPaso:'',fechaSeg:'',origen:'granola'});
+  saveDB();showToast('Resumen importado ✓');renderCM();
+}
+
+// ── DICTADO POR VOZ ──
+let recog=null,dictando=false;
+function toggleDictado(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Tu navegador no soporta dictado por voz');return;}
+  const btn=document.getElementById('mic-btn'),ta=document.getElementById('qn-txt');
+  if(dictando&&recog){recog.stop();return;}
+  recog=new SR();recog.lang='es-MX';recog.continuous=true;recog.interimResults=false;
+  recog.onresult=ev=>{for(let i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)ta.value+=(ta.value?' ':'')+ev.results[i][0].transcript;}};
+  recog.onend=()=>{dictando=false;btn&&btn.classList.remove('rec');};
+  recog.onerror=()=>{dictando=false;btn&&btn.classList.remove('rec');showToast('Error de micrófono');};
+  recog.start();dictando=true;btn&&btn.classList.add('rec');showToast('Dictando... toca el micrófono para parar');
+}
+
+// ── ACCIONES ──
+function setTipo(id,t){
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  c.tipo=t;
+  if(t==='relacion')c.etapa='Relación';
+  else if(c.etapa==='Relación')c.etapa=(t==='cliente')?'Cliente':'Prospecto';
+  saveDB();renderCM();showToast('Tipo: '+TIPOS[t].lbl);
 }
 function setEt(id,et){
-  const c=db.contacts.find(x=>x.id===id);
-  if(c){
-    const antes=c.etapa;
-    c.etapa=et;
-    // Si se convierte a cliente, registrar en historial
-    if(et==='Cliente'&&antes!=='Cliente'){
-      db.actividades.push({id:'a'+Date.now(),contactoId:id,contacto:c.nombre,tipo:'Nota',fecha:new Date().toISOString().split('T')[0],notas:'⭐ Contacto convertido a Cliente',proximoPaso:'',fechaSeg:''});
-    }
-    saveDB();renderCM();
-    if(V==='pipeline')rPipe();if(V==='panel')rPanel();
-    showToast('Etapa actualizada a '+et);
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  const antes=c.etapa;
+  c.etapa=et;
+  if(et==='Cliente'&&antes!=='Cliente'){
+    if(c.tipo!=='cliente')c.tipo='cliente';
+    db.actividades.push({id:'a'+Date.now(),contactoId:id,contacto:c.nombre,tipo:'Nota',fecha:todayISO(),notas:'⭐ Contacto convertido a Cliente',proximoPaso:'',fechaSeg:''});
   }
+  if(et==='Cliente Anterior'&&antes==='Cliente'){
+    db.actividades.push({id:'a'+Date.now(),contactoId:id,contacto:c.nombre,tipo:'Nota',fecha:todayISO(),notas:'🕰️ Marcado como Cliente Anterior',proximoPaso:'',fechaSeg:''});
+  }
+  saveDB();renderCM();nav(V);showToast('Etapa actualizada a '+et);
 }
 function setTe(id,t){const c=db.contacts.find(x=>x.id===id);if(c){c.temperatura=t;saveDB();renderCM();showToast('Temperatura: '+t);}}
 function setF(id,f,v){
-  const c=db.contacts.find(x=>x.id===id);
-  if(c){
-    if(f==='valor')c[f]=parseInt(v)||0;
-    else c[f]=v;
-    saveDB();showToast('Guardado ✓');
-    // Refresh modal header on key field changes
-    if(f==='nombre'||f==='empresa'||f==='valor'){renderCM();}
-    // Refresh list if open
-    if(V==='contactos')rCont();
-  }
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  if(f==='valor')c[f]=parseInt(v)||0;else c[f]=v;
+  saveDB();showToast('Guardado ✓');
+  if(f==='nombre')renderCM();
+  if(V==='contactos')rCont();
 }
 function toggleProd(id,prod,label){
-  const c=db.contacts.find(x=>x.id===id);
-  if(!c)return;
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
   if(!c.productos)c.productos=[];
   const i=c.productos.indexOf(prod);
   if(i>=0){c.productos.splice(i,1);label&&label.classList.remove('checked');}
@@ -856,59 +1161,102 @@ function toggleProd(id,prod,label){
 }
 function guardarNota(cid){
   const txt=document.getElementById('qn-txt');
-  if(!txt||!txt.value.trim()){alert('Escribe algo primero');return;}
+  if(!txt||!txt.value.trim()){showToast('Escribe algo primero');return;}
   const c=db.contacts.find(x=>x.id===cid);
-  db.actividades.push({id:'a'+Date.now(),contactoId:cid,contacto:c?c.nombre:'',tipo:'Nota',fecha:new Date().toISOString().split('T')[0],notas:txt.value.trim(),proximoPaso:'',fechaSeg:''});
-  saveDB();showToast('Nota guardada ✓');txt.value='';renderCM();
+  db.actividades.push({id:'a'+Date.now(),contactoId:cid,contacto:c?c.nombre:'',tipo:'Nota',fecha:todayISO(),notas:txt.value.trim(),proximoPaso:'',fechaSeg:''});
+  saveDB();showToast('Nota guardada ✓');renderCM();
 }
 function aCliente(id){
-  const c=db.contacts.find(x=>x.id===id);
-  if(!c)return;
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
   if(!confirm(`¿Convertir a ${c.nombre} en Cliente? Se registrará en el historial.`))return;
   setEt(id,'Cliente');
 }
 function baja(id){
-  const c=db.contacts.find(x=>x.id===id);
-  if(!c)return;
-  if(!confirm(`¿Dar de baja a ${c.nombre}?\n\nSeguirá en tu base de datos y podrás reactivarlo desde "Dados de baja".`))return;
-  c.activo=false;
-  saveDB();closeC();
-  if(V==='pipeline')rPipe();else if(V==='contactos')rCont();else rPanel();
-  showToast(c.nombre+' dado de baja');
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  if(!confirm(`¿Dar de baja a ${c.nombre}?\n\nSeguirá en tu base y podrás reactivarlo.`))return;
+  c.activo=false;saveDB();closeC();nav(V);showToast(c.nombre+' dado de baja');
+}
+function setSA(t){
+  const n=document.getElementById('act-n');if(n)sNota=n.value;
+  const p=document.getElementById('act-p');if(p)sPaso=p.value;
+  const r=document.getElementById('act-r');if(r)sResumen=r.value;
+  const f=document.getElementById('act-fd');if(f)sFecha=f.value;
+  sact=t;renderCM();
 }
 function gAct(){
-  if(!sact){alert('Selecciona el tipo de actividad primero');return;}
-  const nota=document.getElementById('act-n')?.value||'';
-  const fds=document.getElementById('act-fd')?.value||'';
+  if(!sact){showToast('Selecciona el tipo de actividad primero');return;}
   const c=db.contacts.find(x=>x.id===sid);
-  db.actividades.push({id:'a'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',tipo:sact,fecha:new Date().toISOString().split('T')[0],notas:nota,proximoPaso:'',fechaSeg:fds});
-  if(fds)db.seguimientos.push({id:'s'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',empresa:c?c.empresa||'':'',fecha:fds,motivo:nota||sact,completado:false});
-  saveDB();sact=null;sNota='';sFecha='';showToast('Actividad guardada ✓');stab('historial');
+  db.actividades.push({id:'a'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',tipo:sact,fecha:todayISO(),notas:sNota,resumen:sResumen,proximoPaso:sPaso,fechaSeg:sFecha});
+  if(sFecha)db.seguimientos.push({id:'s'+Date.now(),contactoId:sid,contacto:c?c.nombre:'',empresa:c?c.empresa||'':'',fecha:sFecha,motivo:sPaso||sNota||sact,completado:false});
+  // Sugerencia automática: si hubo conversación y no puso fecha, sugerir próximo contacto
+  let extra='';
+  if(!sFecha&&['Llamada','WhatsApp','Reunión','LinkedIn'].includes(sact)){
+    const d=new Date();d.setDate(d.getDate()+7);
+    extra=' · Sugerencia: agenda próximo contacto';
+  }
+  saveDB();sact=null;sNota='';sPaso='';sFecha='';sResumen='';showToast('Actividad guardada ✓'+extra);stab('hist');
+}
+function regenMsg(id){
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  const pool=craftPool(c);
+  if(pool.length<=1){msgTxt=pool[0];}
+  else{let n=pool[Math.floor(Math.random()*pool.length)];if(n===msgTxt)n=pool[(pool.indexOf(n)+1)%pool.length];msgTxt=n;}
+  renderCM();
+}
+function sendMsgWA(id){
+  const c=db.contacts.find(x=>x.id===id);if(!c)return;
+  const phone=(c.tel||'').replace(/\D/g,'');
+  if(!phone){showToast('Agrega el teléfono primero');return;}
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msgTxt||'')}`);
 }
 
 // ── NUEVO CONTACTO ──
-function openN(){document.getElementById('modal-n').classList.add('open');}
+let tipoN='prospecto';
+function selTipoN(el){
+  tipoN=el.dataset.tipo;
+  document.querySelectorAll('#new-tipo .prod-chip').forEach(x=>x.classList.remove('checked'));
+  el.classList.add('checked');
+  const et=document.getElementById('fn-etapa');
+  if(tipoN==='relacion'){et.value='Relación';}
+  else if(et.value==='Relación'){et.value='Prospecto';}
+  // Si es Relación, pre-seleccionar etapa "Relación" que existe oculta: la añadimos al select
+  if(tipoN==='relacion'&&!Array.from(et.options).some(o=>o.value==='Relación')){
+    const o=document.createElement('option');o.value='Relación';o.textContent='Relación';et.appendChild(o);et.value='Relación';
+  }
+}
+function openN(){
+  tipoN='prospecto';
+  document.querySelectorAll('#new-tipo .prod-chip').forEach(x=>x.classList.toggle('checked',x.dataset.tipo==='prospecto'));
+  document.getElementById('modal-n').classList.add('open');
+}
 function closeN(){document.getElementById('modal-n').classList.remove('open');document.getElementById('form-n').reset();document.querySelectorAll('#new-prods .prod-chip').forEach(el=>el.classList.remove('checked'));}
 function guardarNuevo(){
   const f=document.getElementById('form-n');
   const nombre=f.nombre.value.trim();
-  if(!nombre){alert('El nombre es obligatorio');return;}
-  const prods=Array.from(f.querySelectorAll('input[name="prod"]:checked')).map(el=>el.value);
+  if(!nombre){showToast('El nombre es obligatorio');return;}
+  const prodsLimpios=Array.from(f.querySelectorAll('#new-prods .prod-chip.checked')).map((el,i)=>PRODUCTOS[i]).filter(Boolean);
+  let etapa=f.etapa.value||'Prospecto';
+  if(tipoN==='relacion')etapa='Relación';
+  const memoria=[];
+  if(f.detallePersonal.value.trim())memoria.push({fecha:todayISO(),texto:f.detallePersonal.value.trim()});
   db.contacts.push({
-    id:Math.max(...db.contacts.map(c=>c.id),0)+1,
+    id:Math.max(0,...db.contacts.map(c=>c.id))+1,
     nombre,email:f.email.value.trim(),tel:f.tel.value.trim(),
     contacto2:f.contacto2.value.trim(),empresa:f.empresa.value.trim(),
-    cargo:f.cargo.value.trim(),etapa:f.etapa.value||'Prospecto',
+    cargo:f.cargo.value.trim(),etapa,
+    tipo:tipoN,
     temperatura:f.temperatura.value||'Cold',
     fechaNacimiento:f.fechaNacimiento.value||'',
+    dedica:f.dedica.value.trim(),detallePersonal:f.detallePersonal.value.trim(),
+    rolRel:f.rolRel.value||'',
+    memoria,
     proyecto:f.proyecto.value.trim(),valor:parseInt(f.valor.value)||0,
     proxContacto:f.proxContacto.value||'',
     notas:f.notas.value.trim(),fuente:f.fuente.value||'',
     planContacto:f.planContacto.value.trim(),
-    productos:prods,activo:true
+    productos:prodsLimpios,activo:true
   });
-  saveDB();closeN();showToast('Contacto creado ✓');
-  if(V==='pipeline')rPipe();else if(V==='contactos')rCont();else rPanel();
+  saveDB();closeN();showToast('Contacto creado ✓');nav(V);
 }
 
 document.getElementById('modal-c').addEventListener('click',ev=>{if(ev.target===ev.currentTarget)closeC();});
